@@ -1,17 +1,12 @@
-# app_domine
+# Domine App
 
-A new Flutter project.
-# Ola Mundo!!
+plicativo de corrida gamificado onde usuários conquistam territórios reais através de trajetos.
 
-## Getting Started
+## Stack
+- Flutter (Dart)
+- Google Maps
+- GPS
+- Firebase (futuro)
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Conceito
+Cada corrida gera um polígono no mapa que passa a pertencer ao usuário.
