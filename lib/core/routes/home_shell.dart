@@ -12,7 +12,7 @@ class _HomeShellState extends State<HomeShell> {
   int index = 0;
 
   final pages = const [
-    HomePage(),
+    MapPage(),
     Placeholder(),
     Placeholder(),
     Placeholder(),
