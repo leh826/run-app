@@ -1,6 +1,11 @@
 import 'package:app_domine/features/map/map_page.dart';
 import 'package:flutter/material.dart';
 import 'package:app_domine/core/themes/app_colors.dart';
+
+import 'package:app_domine/features/history/history_page.dart';
+import 'package:app_domine/features/profile/profile_page.dart';
+import 'package:app_domine/features/run/run_page.dart';
+
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
 
@@ -12,12 +17,12 @@ class _HomeShellState extends State<HomeShell> {
   int index = 0;
 
   final pages = const [
-    MapPage(),
-    Placeholder(),
-    Placeholder(),
-    Placeholder(),
-    Placeholder(),
-  ];
+  MapPage(),
+  Placeholder(),
+  Placeholder(), // botão central depois
+  HistoryPage(),
+  ProfilePage(),
+];
 
   @override
   Widget build(BuildContext context) {
@@ -44,27 +49,42 @@ class _HomeShellState extends State<HomeShell> {
   }
 
   Widget navItem(IconData icon, String label, int i) {
-    return GestureDetector(
-      onTap: () => setState(() => index = i),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: Colors.black),
-          Text(label, style: const TextStyle(fontSize: 12)),
-        ],
-      ),
-    );
-  }
+  final selected = index == i;
+
+  return GestureDetector(
+    onTap: () => setState(() => index = i),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: selected ? Colors.white : Colors.black),
+        Text(label,
+            style: TextStyle(
+              fontSize: 12,
+              color: selected ? Colors.white : Colors.black,
+            )),
+      ],
+    ),
+  );
+}
 
   Widget startButton() {
-    return Container(
+  return GestureDetector(
+    onTap: () {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const RunPage()),
+      );
+    },
+    child: Container(
       width: 70,
       height: 70,
       decoration: const BoxDecoration(
         color: Colors.black,
         shape: BoxShape.circle,
       ),
-      child: const Icon(Icons.directions_run, color: Colors.green, size: 30),
-    );
-  }
+      child: const Icon(Icons.directions_run,
+          color: Colors.green, size: 30),
+    ),
+  );
+}
+
 }
