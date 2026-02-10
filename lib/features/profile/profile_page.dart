@@ -1,13 +1,12 @@
-import 'package:app_domine/features/auth/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../features/auth/auth_gate.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final auth = AuthService();
-
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -25,15 +24,26 @@ class ProfilePage extends StatelessWidget {
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 12,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
                 onPressed: () async {
-                  await auth.logout();
-                  // O StreamBuilder do App já vai redirecionar pro Login
+                  await Supabase.instance.client.auth.signOut();
+
+                  if (!context.mounted) return;
+
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AuthGate(),
+                    ),
+                    (route) => false,
+                  );
                 },
                 child: const Text(
                   "Sair",

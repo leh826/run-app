@@ -22,4 +22,33 @@ class AuthService {
   Future<void> logout() async {
     await supabase.auth.signOut();
   }
+
+  Future<void> register(
+    String email,
+    String password, {
+    required String username,
+  }) async {
+    final res = await supabase.auth.signUp(
+      email: email,
+      password: password,
+    );
+
+    final user = res.user;
+    if (user == null) throw "Erro ao criar usuário";
+
+    await supabase.from("profiles").insert({
+      "id": user.id,
+      "username": username,
+    });
+  }
+
+  Future<Map<String, dynamic>> getProfile() async {
+    final res = await supabase
+        .from("profiles")
+        .select()
+        .eq("id", supabase.auth.currentUser!.id)
+        .single();
+    return res;
+  }
+
 }
