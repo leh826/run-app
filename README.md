@@ -4,9 +4,9 @@ plicativo de corrida gamificado onde usuários conquistam territórios reais atr
 
 ## Stack
 - Flutter (Dart)
-- Google Maps
+- OpenStreetMap
 - GPS
-- Firebase (futuro)
+- Supabase
 
 ## Conceito
 Cada corrida gera um polígono no mapa que passa a pertencer ao usuário.
