@@ -8,6 +8,7 @@ class RunController {
   final _distance = Distance();
   RunSession? _session;
   StreamSubscription<Position>? _sub;
+  Timer? _timer;
 
   RunSession? get session => _session;
 
@@ -16,6 +17,13 @@ class RunController {
       startTime: DateTime.now(),
       path: [],
     );
+
+    // Atualiza o tempo a cada segundo
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (_session != null) {
+        _session!.endTime = DateTime.now();
+      }
+    });
 
     _sub = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
@@ -46,33 +54,35 @@ class RunController {
 
   void stop() {
     _sub?.cancel();
+    _timer?.cancel();
     _session?.endTime = DateTime.now();
   }
+
   List<LatLng> get closedPolygon {
     if (session == null || session!.path.length < 3) return [];
     final points = List<LatLng>.from(session!.path);
     points.add(points.first);
     return points;
   }
-double get conqueredAreaM2 {
-  final poly = closedPolygon;
-  if (poly.length < 4) return 0;
 
-  const earthRadius = 6378137.0;
-  double area = 0;
+  double get conqueredAreaM2 {
+    final poly = closedPolygon;
+    if (poly.length < 4) return 0;
 
-  for (int i = 0; i < poly.length - 1; i++) {
-    final p1 = poly[i];
-    final p2 = poly[i + 1];
+    const earthRadius = 6378137.0;
+    double area = 0;
 
-    area += (p2.longitude - p1.longitude) *
-        (2 +
-            sin(p1.latitude * pi / 180) +
-            sin(p2.latitude * pi / 180));
+    for (int i = 0; i < poly.length - 1; i++) {
+      final p1 = poly[i];
+      final p2 = poly[i + 1];
+
+      area += (p2.longitude - p1.longitude) *
+          (2 +
+              sin(p1.latitude * pi / 180) +
+              sin(p2.latitude * pi / 180));
+    }
+
+    area = area * earthRadius * earthRadius / 2;
+    return area.abs();
   }
-
-  area = area * earthRadius * earthRadius / 2;
-  return area.abs();
-}
-
 }

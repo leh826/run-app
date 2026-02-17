@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:app_domine/features/run/run_controller.dart';
+import 'package:app_domine/features/run/run_repository.dart';
 
 class RunPage extends StatefulWidget {
   const RunPage({super.key});
@@ -13,6 +14,8 @@ class RunPage extends StatefulWidget {
 class _RunPageState extends State<RunPage> {
   final controller = RunController();
   final mapController = MapController();
+  final repo = RunRepository();
+
 
   Timer? uiTimer;
   bool mapReady = false;
@@ -139,18 +142,32 @@ class _RunPageState extends State<RunPage> {
       builder: (_) => AlertDialog(
         title: const Text("Finalizar corrida"),
         content: const Text(
-            "Deseja finalizar a corrida e verificar o território conquistado?"),
+          "Deseja finalizar a corrida e verificar o território conquistado?",
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Cancelar")),
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancelar"),
+          ),
           TextButton(
-              onPressed: () {
-                controller.stop();
-                Navigator.pop(context);
-                Navigator.pop(context);
-              },
-              child: const Text("Finalizar")),
+            onPressed: () async {
+              controller.stop();
+
+              final session = controller.session;
+              if (session != null) {
+                await repo.saveRun(
+                  session,
+                  controller.conqueredAreaM2,
+                );
+              }
+
+              if (!mounted) return;
+
+              Navigator.pop(context); // fecha dialog
+              Navigator.pop(context); // volta pra home
+            },
+            child: const Text("Finalizar"),
+          ),
         ],
       ),
     );

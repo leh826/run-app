@@ -25,12 +25,13 @@ class AuthService {
 
   Future<void> register(
     String email,
-    String password, {
+    String password, String trim, {
     required String username,
   }) async {
-    final res = await supabase.auth.signUp(
-      email: email,
-      password: password,
+    final res = await Supabase.instance.client.auth.signUp(
+    email: email,
+    password: password,
+    data: {'username': username},
     );
 
     final user = res.user;
@@ -50,5 +51,4 @@ class AuthService {
         .single();
     return res;
   }
-
 }

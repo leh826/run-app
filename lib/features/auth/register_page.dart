@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:app_domine/features/auth/auth_service.dart';
+import 'package:app_domine/features/auth/CheckEmailPage.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -15,6 +16,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final confirm = TextEditingController();
 
   final auth = AuthService();
+  bool loading = false;
 
   @override
   void dispose() {
@@ -29,69 +31,81 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: const Chip(
-                  label: Text("Voltar"),
-                  backgroundColor: Colors.green,
-                  labelStyle: TextStyle(color: Colors.black),
-                ),
-              ),
-
-              const SizedBox(height: 30),
-
-              const Text(
-                "Realize seu cadastro!",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 28,
-                  fontWeight: FontWeight.w300,
-                ),
-              ),
-
-              const SizedBox(height: 6),
-
-              const Text(
-                "Insira seus dados",
-                style: TextStyle(color: Colors.white54),
-              ),
-
-              const SizedBox(height: 30),
-
-              _input("Nome de usuário", username),
-              const SizedBox(height: 16),
-              _input("E-mail", email),
-              const SizedBox(height: 16),
-              _input("Digite sua senha", pass, obscure: true),
-              const SizedBox(height: 16),
-              _input("Confirme sua senha", confirm, obscure: true),
-
-              const Spacer(),
-
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height -
+                  MediaQuery.of(context).padding.top,
+            ),
+            child: IntrinsicHeight(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Chip(
+                      label: Text("Voltar"),
+                      backgroundColor: Colors.green,
+                      labelStyle: TextStyle(color: Colors.black),
                     ),
                   ),
-                  onPressed: _register,
-                  child: const Text(
-                    "Continuar",
-                    style: TextStyle(color: Colors.black, fontSize: 18),
+
+                  const SizedBox(height: 30),
+
+                  const Text(
+                    "Realize seu cadastro!",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.w300,
+                    ),
                   ),
-                ),
+
+                  const SizedBox(height: 6),
+
+                  const Text(
+                    "Insira seus dados",
+                    style: TextStyle(color: Colors.white54),
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  _input("Nome de usuário", username),
+                  const SizedBox(height: 16),
+                  _input("E-mail", email),
+                  const SizedBox(height: 16),
+                  _input("Digite sua senha", pass, obscure: true),
+                  const SizedBox(height: 16),
+                  _input("Confirme sua senha", confirm, obscure: true),
+
+                  const Spacer(),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      onPressed: loading ? null : _register,
+                      child: loading
+                          ? const CircularProgressIndicator(color: Colors.black)
+                          : const Text(
+                              "Continuar",
+                              style: TextStyle(
+                                  color: Colors.black, fontSize: 18),
+                            ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -127,21 +141,30 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
+    setState(() => loading = true);
+
     try {
       await auth.register(
-        email.text,
-        pass.text,
-        username: username.text,
+        email.text.trim(),
+        pass.text.trim(),
+        username.text.trim(), username: '',
       );
 
       if (!mounted) return;
 
-      Navigator.pop(context);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const CheckEmailPage(),
+        ),
+      );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Erro: $e")),
       );
+    } finally {
+      if (mounted) setState(() => loading = false);
     }
   }
 }
