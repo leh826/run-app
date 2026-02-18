@@ -147,10 +147,17 @@ class _RegisterPageState extends State<RegisterPage> {
       await auth.register(
         email.text.trim(),
         pass.text.trim(),
-        username.text.trim(), username: '',
+        username: username.text.trim(),
       );
 
       if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Cadastro realizado! Confirme seu e-mail."),
+          backgroundColor: Colors.green,
+        ),
+      );
 
       Navigator.pushReplacement(
         context,
@@ -158,6 +165,7 @@ class _RegisterPageState extends State<RegisterPage> {
           builder: (_) => const CheckEmailPage(),
         ),
       );
+
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

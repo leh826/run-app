@@ -9,12 +9,19 @@ import 'package:app_domine/features/run/run_page.dart';
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
 
+  static HomeShellState? of(BuildContext context) =>
+    context.findAncestorStateOfType<HomeShellState>();
+
   @override
-  State<HomeShell> createState() => _HomeShellState();
+  State<HomeShell> createState() => HomeShellState();
 }
 
-class _HomeShellState extends State<HomeShell> {
+class HomeShellState extends State<HomeShell> {
   int index = 0;
+
+   void goToHistory() {
+    setState(() => index = 3);
+  }
 
   final pages = const [
   MapPage(),

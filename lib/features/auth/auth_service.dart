@@ -23,24 +23,32 @@ class AuthService {
     await supabase.auth.signOut();
   }
 
-  Future<void> register(
+    Future<void> register(
     String email,
-    String password, String trim, {
+    String password, {
     required String username,
   }) async {
-    final res = await Supabase.instance.client.auth.signUp(
-    email: email,
-    password: password,
-    data: {'username': username},
+    final res = await supabase.auth.signUp(
+      email: email,
+      password: password,
+      data: {'username': username},
     );
 
     final user = res.user;
-    if (user == null) throw "Erro ao criar usuário";
+    if (user == null) {
+      throw Exception("Erro ao criar usuário");
+    }
 
     await supabase.from("profiles").insert({
       "id": user.id,
       "username": username,
     });
+
+    // Se não veio sessão, o email ainda não foi confirmado
+    if (res.session == null) {
+      throw Exception(
+        "Um e-mail de confirmação foi enviado. Verifique sua caixa de entrada.");
+    }
   }
 
   Future<Map<String, dynamic>> getProfile() async {

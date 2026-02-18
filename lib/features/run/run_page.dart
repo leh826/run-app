@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:app_domine/features/run/run_controller.dart';
 import 'package:app_domine/features/run/run_repository.dart';
+import 'package:app_domine/core/routes/home_shell.dart';
 
 class RunPage extends StatefulWidget {
   const RunPage({super.key});
@@ -165,6 +166,8 @@ class _RunPageState extends State<RunPage> {
 
               Navigator.pop(context); // fecha dialog
               Navigator.pop(context); // volta pra home
+              // muda para a aba Histórico
+              HomeShell.of(context)?.goToHistory();
             },
             child: const Text("Finalizar"),
           ),

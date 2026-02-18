@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:app_domine/features/run/run_repository.dart';
 import 'package:app_domine/features/map/run_map_view.dart';
 
-class RunHistoryPage extends StatefulWidget {
-  const RunHistoryPage({super.key});
+class HistoryPage extends StatefulWidget {
+  const HistoryPage({super.key});
 
   @override
-  State<RunHistoryPage> createState() => _RunHistoryPageState();
+  State<HistoryPage> createState() => _HistoryPageState();
 }
 
-class _RunHistoryPageState extends State<RunHistoryPage> {
+class _HistoryPageState extends State<HistoryPage> {
   final repo = RunRepository();
   List<Map<String, dynamic>> runs = [];
   bool loading = true;
