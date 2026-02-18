@@ -23,10 +23,10 @@ class AuthService {
     await supabase.auth.signOut();
   }
 
-    Future<void> register(
-    String email,
-    String password, {
-    required String username,
+  Future<void> register(
+  String email,
+  String password, {
+  required String username,
   }) async {
     final res = await supabase.auth.signUp(
       email: email,
@@ -34,20 +34,14 @@ class AuthService {
       data: {'username': username},
     );
 
-    final user = res.user;
-    if (user == null) {
+    if (res.user == null) {
       throw Exception("Erro ao criar usuário");
     }
 
-    await supabase.from("profiles").insert({
-      "id": user.id,
-      "username": username,
-    });
-
-    // Se não veio sessão, o email ainda não foi confirmado
     if (res.session == null) {
       throw Exception(
-        "Um e-mail de confirmação foi enviado. Verifique sua caixa de entrada.");
+        "Um e-mail de confirmação foi enviado. Verifique sua caixa de entrada.",
+      );
     }
   }
 
