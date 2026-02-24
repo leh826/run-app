@@ -1,6 +1,6 @@
+import 'package:app_domine/features/auth/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:app_domine/features/auth/auth_service.dart';
-import 'package:app_domine/features/auth/CheckEmailPage.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -14,6 +14,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final email = TextEditingController();
   final pass = TextEditingController();
   final confirm = TextEditingController();
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   final auth = AuthService();
   bool loading = false;
@@ -77,9 +79,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   const SizedBox(height: 16),
                   _input("E-mail", email),
                   const SizedBox(height: 16),
-                  _input("Digite sua senha", pass, obscure: true),
+                  _input("Digite sua senha", pass, isPassword: true),
                   const SizedBox(height: 16),
-                  _input("Confirme sua senha", confirm, obscure: true),
+                  _input("Confirme sua senha", confirm, isConfirm: true),
 
                   const Spacer(),
 
@@ -112,26 +114,63 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget _input(String hint, TextEditingController c,
-      {bool obscure = false}) {
-    return TextField(
-      controller: c,
-      obscureText: obscure,
-      style: const TextStyle(color: Colors.white),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: const TextStyle(color: Colors.white38),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(color: Colors.green),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(color: Colors.green, width: 2),
-        ),
+  Widget _input(
+  String hint,
+  TextEditingController c, {
+  bool isPassword = false,
+  bool isConfirm = false,
+}) {
+  bool isObscureField = isPassword || isConfirm;
+
+  return TextField(
+    controller: c,
+    obscureText: isPassword
+        ? _obscurePassword
+        : isConfirm
+            ? _obscureConfirmPassword
+            : false,
+    style: const TextStyle(color: Colors.white),
+    decoration: InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(color: Colors.white38),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(30),
+        borderSide: const BorderSide(color: Colors.green),
       ),
-    );
-  }
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(30),
+        borderSide:
+            const BorderSide(color: Colors.green, width: 2),
+      ),
+
+      //OLHINHO
+      suffixIcon: isObscureField
+          ? IconButton(
+              icon: Icon(
+                isPassword
+                    ? (_obscurePassword
+                        ? Icons.visibility_off
+                        : Icons.visibility)
+                    : (_obscureConfirmPassword
+                        ? Icons.visibility_off
+                        : Icons.visibility),
+                color: Colors.green,
+              ),
+              onPressed: () {
+                setState(() {
+                  if (isPassword) {
+                    _obscurePassword = !_obscurePassword;
+                  } else if (isConfirm) {
+                    _obscureConfirmPassword =
+                        !_obscureConfirmPassword;
+                  }
+                });
+              },
+            )
+          : null,
+    ),
+  );
+}
 
   Future<void> _register() async {
     if (pass.text != confirm.text) {
@@ -162,7 +201,7 @@ class _RegisterPageState extends State<RegisterPage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => const CheckEmailPage(),
+          builder: (_) => const LoginPage(), // Alterado para LoginPage
         ),
       );
 

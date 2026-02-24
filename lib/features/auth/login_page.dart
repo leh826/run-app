@@ -7,13 +7,14 @@ class LoginPage extends StatefulWidget {
 
   @override
   State<LoginPage> createState() => _LoginPageState();
+  
 }
 
 class _LoginPageState extends State<LoginPage> {
   final email = TextEditingController();
   final pass = TextEditingController();
   final auth = AuthService();
-
+  bool _obscurePassword = true;
   @override
   void dispose() {
     email.dispose();
@@ -67,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
 
                   _input("E-mail", email),
                   const SizedBox(height: 16),
-                  _input("Senha", pass, obscure: true),
+                  _input("Senha", pass, isPassword: true),
 
                   const SizedBox(height: 12),
 
@@ -156,29 +157,47 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _input(String hint, TextEditingController c,
-      {bool obscure = false}) {
-    return TextField(
-      controller: c,
-      obscureText: obscure,
-      style: const TextStyle(color: Colors.white),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle:
-            const TextStyle(color: Colors.white38),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide:
-              const BorderSide(color: Colors.green),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(
-              color: Colors.green, width: 2),
-        ),
+  Widget _input(
+  String hint,
+  TextEditingController c, {
+  bool isPassword = false,
+}) {
+  return TextField(
+    controller: c,
+    obscureText: isPassword ? _obscurePassword : false,
+    style: const TextStyle(color: Colors.white),
+    decoration: InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(color: Colors.white38),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(30),
+        borderSide: const BorderSide(color: Colors.green),
       ),
-    );
-  }
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(30),
+        borderSide:
+            const BorderSide(color: Colors.green, width: 2),
+      ),
+
+      //AQUI ESTÁ O OLHINHO
+      suffixIcon: isPassword
+          ? IconButton(
+              icon: Icon(
+                _obscurePassword
+                    ? Icons.visibility_off
+                    : Icons.visibility,
+                color: Colors.green,
+              ),
+              onPressed: () {
+                setState(() {
+                  _obscurePassword = !_obscurePassword;
+                });
+              },
+            )
+          : null,
+    ),
+  );
+}
 
   Widget _socialButton(String text, IconData icon) {
     return OutlinedButton.icon(

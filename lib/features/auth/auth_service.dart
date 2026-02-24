@@ -37,12 +37,6 @@ class AuthService {
     if (res.user == null) {
       throw Exception("Erro ao criar usuário");
     }
-
-    if (res.session == null) {
-      throw Exception(
-        "Um e-mail de confirmação foi enviado. Verifique sua caixa de entrada.",
-      );
-    }
   }
 
   Future<Map<String, dynamic>> getProfile() async {
