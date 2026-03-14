@@ -17,17 +17,17 @@ class _RunPageState extends State<RunPage> {
   final mapController = MapController();
   final repo = RunRepository();
 
-
   Timer? uiTimer;
   bool mapReady = false;
+
+  bool runStarted = false;
 
   @override
   void initState() {
     super.initState();
-    controller.start();
 
     uiTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted) setState(() {});
+      if (mounted && runStarted) setState(() {});
     });
   }
 
@@ -38,16 +38,75 @@ class _RunPageState extends State<RunPage> {
     super.dispose();
   }
 
+  void _startRun() {
+    controller.start();
+
+    setState(() {
+      runStarted = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final session = controller.session;
 
+    /// TELA INICIAL (ANTES DE COMEÇAR A CORRIDA)
+    if (!runStarted) {
+
+      return Scaffold(
+        appBar: AppBar(title: const Text("Nova corrida")),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(30),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.directions_run, size: 80, color: Colors.green),
+                const SizedBox(height: 20),
+                const Text(
+                  "Pronto para conquistar território?",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  "Pressione o botão abaixo para iniciar sua corrida.",
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 40),
+                ElevatedButton.icon(
+                  onPressed: _startRun,
+                  icon: const Icon(Icons.play_arrow, color: Colors.black,),
+                  label: const Text("Iniciar corrida",
+                  style: TextStyle(color: Colors.black),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 40,
+                      vertical: 16,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    /// AGUARDANDO PRIMEIRO PONTO DO GPS
     if (session == null || session.path.isEmpty) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
     }
 
+    /// CENTRALIZA MAPA
     if (mapReady) {
       mapController.move(
         session.path.last,
@@ -55,6 +114,7 @@ class _RunPageState extends State<RunPage> {
       );
     }
 
+    ///TELA DA CORRIDA
     return Scaffold(
       body: Stack(
         children: [
@@ -112,7 +172,13 @@ class _RunPageState extends State<RunPage> {
             right: 40,
             child: ElevatedButton(
               onPressed: _confirmFinish,
-              child: const Text("Finalizar corrida"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.black,
+              ),
+              child: const Text("Finalizar corrida",
+              style: TextStyle(color: Colors.black),
+              ),
             ),
           ),
         ],
@@ -129,9 +195,13 @@ class _RunPageState extends State<RunPage> {
   Widget info(String label, String value) {
     return Column(
       children: [
-        Text(value,
-            style: const TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold)),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         Text(label),
       ],
     );
@@ -148,7 +218,9 @@ class _RunPageState extends State<RunPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Cancelar"),
+            child: const Text("Cancelar",
+            style: TextStyle(color: Colors.black),
+            ),
           ),
           TextButton(
             onPressed: () async {
@@ -164,12 +236,16 @@ class _RunPageState extends State<RunPage> {
 
               if (!mounted) return;
 
-              Navigator.pop(context); // fecha dialog
-              Navigator.pop(context); // volta pra home
-              // muda para a aba Histórico
+              Navigator.pop(context); // fecha dialogo
               HomeShell.of(context)?.goToHistory();
+              Navigator.pop(context); // sai da tela de corrida
             },
-            child: const Text("Finalizar"),
+             style: TextButton.styleFrom(
+             foregroundColor: Colors.green,
+             ),
+            child: const Text("Finalizar",
+            style: TextStyle(color: Colors.black),
+            ),
           ),
         ],
       ),
