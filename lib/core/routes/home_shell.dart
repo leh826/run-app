@@ -25,50 +25,77 @@ class HomeShellState extends State<HomeShell> {
 
   final pages = const [
   MapPage(),
-  Placeholder(),
   Placeholder(), // botão central depois
   HistoryPage(),
   ProfilePage(),
 ];
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: pages[index],
-      bottomNavigationBar: Container(
-        height: 75,
-        decoration: const BoxDecoration(
-          color: AppColors.green,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
+Widget build(BuildContext context) {
+  return Scaffold(
+    body: pages[index],
+
+    floatingActionButton: FloatingActionButton(
+      backgroundColor: Colors.black,
+      elevation: 6,
+      onPressed: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const RunPage()),
+        );
+      },
+      child: const Icon(
+        Icons.directions_run,
+        color: Colors.green,
+        size: 28,
+      ),
+    ),
+
+    floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+
+    bottomNavigationBar: BottomAppBar(
+      shape: const CircularNotchedRectangle(),
+      notchMargin: 8,
+      color: AppColors.green,
+      child: SizedBox(
+        height: 65,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
+
             navItem(Icons.home, "Home", 0),
-            navItem(Icons.emoji_events, "Ranking", 1),
-            startButton(),
-            navItem(Icons.history, "Histórico", 3),
-            navItem(Icons.person, "Perfil", 4),
+
+            const SizedBox(width: 40), // espaço do botão central
+
+            navItem(Icons.history, "Histórico", 2),
+            navItem(Icons.person, "Perfil", 3),
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget navItem(IconData icon, String label, int i) {
   final selected = index == i;
 
-  return GestureDetector(
+  return InkWell(
     onTap: () => setState(() => index = i),
     child: Column(
       mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(icon, color: selected ? Colors.white : Colors.black),
-        Text(label,
-            style: TextStyle(
-              fontSize: 12,
-              color: selected ? Colors.white : Colors.black,
-            )),
+        Icon(
+          icon,
+          color: selected ? Colors.white : Colors.black,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: selected ? Colors.white : Colors.black,
+          ),
+        ),
       ],
     ),
   );
