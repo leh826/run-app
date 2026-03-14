@@ -16,7 +16,7 @@ class ProfilePage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // 🔥 HEADER VERDE
+            // HEADER VERDE
             Container(
               height: 80,
               color: const Color(0xFF3EB400),
@@ -27,7 +27,6 @@ class ProfilePage extends StatelessWidget {
                 children: [
                   const SizedBox(), // espaço esquerdo
 
-                  // 🔴 BOTÃO LOGOUT
                   IconButton(
                     onPressed: () async {
                       await Supabase.instance.client.auth

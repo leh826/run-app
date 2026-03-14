@@ -27,8 +27,8 @@ class WelcomePage extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.2),
-                    Colors.black.withOpacity(0.9),
+                    Colors.black.withAlpha((255 * 0.3).round()),
+                    Colors.black.withAlpha((255 * 0.8).round()),
                   ],
                 ),
               ),
