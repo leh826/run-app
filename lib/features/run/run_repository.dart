@@ -15,7 +15,7 @@ class RunRepository {
     final user = supabase.auth.currentUser;
     if (user == null) throw Exception("Usuário não autenticado");
 
-    // 1️⃣ salva SEMPRE no histórico
+    // SEMPRE no histórico
     await supabase.from("runs").insert({
       "user_id": user.id,
       "started_at": s.startTime.toIso8601String(),
@@ -29,15 +29,15 @@ class RunRepository {
           .toList(),
     });
 
-    // 2️⃣ buscar territórios existentes
+    // buscar territórios existentes
     final existing = await supabase
         .from("territories")
         .select("id, user_id, area_m2, path");
 
-    // 3️⃣ centro do trajeto atual
+    // centro do trajeto atual
     final center = _calculateCenter(s.path);
 
-    // 4️⃣ comparar com territórios existentes
+    // comparar com territórios existentes
     for (final r in existing) {
       final double dbArea = (r["area_m2"] as num).toDouble();
 
@@ -62,7 +62,7 @@ class RunRepository {
         // território já existe
 
         if (r["user_id"] != user.id) {
-          // 🏴 CAPTURA TERRITÓRIO
+          //CAPTURA TERRITÓRIO
           await supabase
               .from("territories")
               .update({
@@ -77,7 +77,7 @@ class RunRepository {
           };
 
         } else {
-          // 🔁 território repetido
+          // território repetido
           return {
             "status": "REPETIDO",
             "territoryId": r["id"],
@@ -86,7 +86,7 @@ class RunRepository {
       }
     }
 
-    // 5️⃣ território novo
+    // território novo
     final newTerritory = await supabase
         .from("territories")
         .insert({

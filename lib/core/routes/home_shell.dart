@@ -20,7 +20,7 @@ class HomeShellState extends State<HomeShell> {
   int index = 0;
 
    void goToHistory() {
-    setState(() => index = 3);
+    setState(() => index = 2);
   }
 
   final pages = const [

@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:app_domine/features/run/run_controller.dart';
@@ -236,9 +237,12 @@ class _RunPageState extends State<RunPage> {
 
               if (!mounted) return;
 
-              Navigator.pop(context); // fecha dialogo
-              HomeShell.of(context)?.goToHistory();
-              Navigator.pop(context); // sai da tela de corrida
+              Navigator.pop(context); // fecha dialog
+
+              Future.microtask(() {
+                Navigator.pop(context); // volta da RunPage
+                HomeShell.of(context)?.goToHistory();
+              });// sai da tela de corrida
             },
              style: TextButton.styleFrom(
              foregroundColor: Colors.green,
