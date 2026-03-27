@@ -11,15 +11,16 @@ class WelcomePage extends StatelessWidget {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // Fundo com imagem
+          // IMAGEM DE FUNDO
           Positioned.fill(
             child: Image.asset(
-              "assets/images/bg_runner.jpg", // sua imagem
+              "assets/images/bg_runner.jpg",
               fit: BoxFit.cover,
+              alignment: Alignment.center,
             ),
           ),
 
-          // Gradiente escuro
+          // GRADIENTE (melhorado)
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -27,62 +28,84 @@ class WelcomePage extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withAlpha((255 * 0.3).round()),
-                    Colors.black.withAlpha((255 * 0.8).round()),
+                    Colors.black.withAlpha((255 * 0.2).round()),
+                    Colors.black.withAlpha((255 * 0.85).round()),
                   ],
                 ),
               ),
             ),
           ),
 
-          // Conteúdo
+          // CONTEÚDO
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 20),
 
-                  // Logo
-                  Image.asset(
-                    "assets/logo/logo.png",
-                    width: 60,
+                  // LOGO + NOME (melhor identidade)
+                  Row(
+                    children: [
+                      Image.asset(
+                        "assets/logo/logo.png",
+                        width: 40,
+                      ),
+                      const SizedBox(width: 10),
+                      const Text(
+                        "Domine",
+                        style: TextStyle(
+                          fontFamily: "Poppins",
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
+                    ],
                   ),
 
                   const Spacer(),
 
+                  // TÍTULO PRINCIPAL
                   const Text(
-                    "Domine",
+                    "Domine o mapa",
                     style: TextStyle(
+                      fontFamily: "BebasNeue",
+                      fontSize: 38,
+                      fontWeight: FontWeight.bold,
                       color: Colors.white,
-                      fontSize: 48,
-                      fontWeight: FontWeight.w300,
+                      height: 1.2,
+                      letterSpacing: 1.5,
                     ),
                   ),
 
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 12),
 
+                  // DESCRIÇÃO
                   const Text(
-                    "Conquiste o mundo\ncom o seu esforço!",
+                    "Corra, conquiste territórios e\nmostre quem manda na sua cidade.",
                     style: TextStyle(
-                      color: Colors.green,
-                      fontSize: 18,
+                      fontFamily: "Poppins",
+                      fontSize: 16,
+                      color: Colors.white70,
+                      height: 1.4,
                     ),
                   ),
 
                   const SizedBox(height: 40),
 
-                  // Botão Cadastro (outline)
+                  // BOTÃO PRINCIPAL (CTA forte)
                   SizedBox(
                     width: double.infinity,
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Colors.green),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF3EB400),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
+                        elevation: 4,
                       ),
                       onPressed: () {
                         Navigator.push(
@@ -93,21 +116,26 @@ class WelcomePage extends StatelessWidget {
                         );
                       },
                       child: const Text(
-                        "Cadastro",
-                        style: TextStyle(color: Colors.green, fontSize: 18),
+                        "Começar agora",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: "Poppins",
+                        ),
                       ),
                     ),
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14),
 
-                  // Botão Login (cheio)
+                  // BOTÃO SECUNDÁRIO
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Colors.white54),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -121,8 +149,12 @@ class WelcomePage extends StatelessWidget {
                         );
                       },
                       child: const Text(
-                        "Login",
-                        style: TextStyle(color: Colors.black, fontSize: 18),
+                        "Já tenho conta",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontFamily: "Poppins",
+                        ),
                       ),
                     ),
                   ),

@@ -72,16 +72,19 @@ class _ProfilePageState extends State<ProfilePage> {
         .select('path')
         .eq('user_id', user.id);
 
-    territoryPolygons = [];
+    final List<List<LatLng>> temp = [];
 
     for (var t in data) {
-
       final List path = t['path'];
 
-      territoryPolygons.add(
+      temp.add(
         path.map((p) => LatLng(p['lat'], p['lng'])).toList(),
       );
     }
+
+    setState(() {
+      territoryPolygons = temp;
+    });
   }
    Future<void> pickImage() async {
 
@@ -97,8 +100,7 @@ class _ProfilePageState extends State<ProfilePage> {
       });
     }
   }
-  Future<String?> uploadAvatar(String userId) async {
-
+    Future<String?> uploadAvatar(String userId) async {
     if (imageFile == null) return null;
 
     final fileName = "$userId.jpg";
@@ -111,16 +113,14 @@ class _ProfilePageState extends State<ProfilePage> {
           fileOptions: const FileOptions(upsert: true),
         );
 
-    final url = supabase.storage
+    final publicUrl = supabase.storage
         .from('avatars')
         .getPublicUrl(fileName);
 
-    return url;
+    return publicUrl;
   }
-  Future<void> updateProfile() async {
-
+    Future<void> updateProfile() async {
     final user = supabase.auth.currentUser;
-
     if (user == null) return;
 
     String? avatarUrl;
@@ -129,15 +129,25 @@ class _ProfilePageState extends State<ProfilePage> {
       avatarUrl = await uploadAvatar(user.id);
     }
 
+    final updateData = {
+      'username': usernameController.text,
+    };
+
+    if (avatarUrl != null) {
+      updateData['photo_url'] = avatarUrl;
+      
+    }
+
     await supabase
         .from('profiles')
-        .update({
-          'username': usernameController.text,
-          'photo_url': ?avatarUrl,
-        })
+        .update(updateData)
         .eq('id', user.id);
 
-    await loadProfile();
+    imageFile = null; // limpa preview
+
+    await loadProfile(); // recarrega dados reais do banco
+
+    setState(() {});
   }
 
   void openEditDialog() {
@@ -215,7 +225,8 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       backgroundColor: const Color(0xFF2C2C2C),
       body: SafeArea(
-        child: Column(
+      child: SingleChildScrollView(
+      child: Column(
           children: [
 
             // HEADER
@@ -254,11 +265,19 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 20),
 
             // FOTO
-            CircleAvatar(
-              radius: 70,
-              backgroundImage: photoUrl.isNotEmpty
-                ? NetworkImage(photoUrl)
-                : null,
+            GestureDetector(
+              onTap: pickImage,
+              child: CircleAvatar(
+                radius: 70,
+                backgroundImage: imageFile != null
+                    ? FileImage(imageFile!)
+                    : (photoUrl.isNotEmpty
+                        ? NetworkImage(photoUrl)
+                        : null) as ImageProvider?,
+                child: photoUrl.isEmpty && imageFile == null
+                    ? const Icon(Icons.person, size: 50)
+                    : null,
+              ),
             ),
 
             const SizedBox(height: 15),
@@ -305,13 +324,13 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
 
-            const SizedBox(height: 40),
+            const SizedBox(height: 24),
 
             // MINI MAPA
             Padding(
               padding: const EdgeInsets.all(20),
               child: SizedBox(
-                height: 200,
+                height: 180,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: FlutterMap(
@@ -327,7 +346,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
                       TileLayer(
                         urlTemplate:
-                            "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+                        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                        subdomains: const ['a', 'b', 'c'],
                         userAgentPackageName: 'com.domine.run',
                       ),
 
@@ -350,6 +370,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

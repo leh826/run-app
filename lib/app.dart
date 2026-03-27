@@ -9,6 +9,11 @@ class App extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+
+       theme: ThemeData(
+        fontFamily: "Poppins",
+      ),
+
       home: const AuthGate(),
     );
   }
