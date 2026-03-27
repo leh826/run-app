@@ -1,9 +1,9 @@
-import 'package:app_domine/core/themes/app_colors.dart';
+import 'package:Domine/core/themes/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:app_domine/services/notification_service.dart';
+import 'package:Domine/services/notification_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MapPage extends StatefulWidget {
@@ -27,12 +27,10 @@ class _MapPageState extends State<MapPage> {
 
     if (user != null) {
       NotificationService().listenNotifications(user.id, (notification) {
-
         setState(() {
           notificationData = notification;
           showTerritoryAlert = true;
         });
-
       });
     }
   }
@@ -60,10 +58,7 @@ class _MapPageState extends State<MapPage> {
       children: [
         // MAPA
         FlutterMap(
-          options: MapOptions(
-            initialCenter: userLocation!,
-            initialZoom: 18,
-          ),
+          options: MapOptions(initialCenter: userLocation!, initialZoom: 18),
           children: [
             TileLayer(
               urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -75,88 +70,81 @@ class _MapPageState extends State<MapPage> {
                   point: userLocation!,
                   width: 40,
                   height: 40,
-                  child: const Icon(Icons.my_location,
-                      color: Colors.green, size: 30),
-                )
+                  child: const Icon(
+                    Icons.my_location,
+                    color: Colors.green,
+                    size: 30,
+                  ),
+                ),
               ],
             ),
           ],
         ),
 
         // TOPO
-        Container(
-          height: 100,
-          color: AppColors.green,
-          alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Image.asset(
-            'assets/logo/logo.png',
-            height: 40,
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            height: 70,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: AppColors.green,
+              boxShadow: const [
+                BoxShadow(color: Colors.black26, blurRadius: 6),
+              ],
+            ),
+            alignment: Alignment.centerLeft,
+            child: Image.asset('assets/logo/logo.png', height: 32),
           ),
         ),
 
-
         // ALERTA
-        if (showTerritoryAlert)
-          Positioned(
-            top: 60,
-            left: 20,
-            right: 20,
+        Positioned(
+          top: 80,
+          left: 20,
+          right: 20,
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 300),
+            opacity: showTerritoryAlert ? 1 : 0,
             child: Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(18),
                 boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 6,
-                  )
+                  BoxShadow(color: Colors.black26, blurRadius: 10),
                 ],
               ),
               child: Row(
                 children: [
+                  const Icon(Icons.warning, color: Colors.orange),
+
+                  const SizedBox(width: 10),
 
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          "Seu território foi invadido!!",
+                          "Território invadido!",
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        const SizedBox(height: 4),
                         Text(
-                          notificationData?['message'] ?? "Corra se quiser manter ele!",
-                          style: const TextStyle(color: AppColors.green),
+                          notificationData?['message'] ?? "",
+                          style: const TextStyle(
+                            color: AppColors.green,
+                            fontSize: 12,
+                          ),
                         ),
                       ],
                     ),
                   ),
 
-                  const SizedBox(width: 10),
-
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: const BoxDecoration(
-                      color: AppColors.green,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.warning,
-                      size: 18,
-                      color: Colors.white,
-                    ),
-                  ),
-
-                  const SizedBox(width: 8),
-
                   GestureDetector(
                     onTap: () {
-                      setState(() {
-                        showTerritoryAlert = false;
-                      });
+                      setState(() => showTerritoryAlert = false);
                     },
                     child: const Icon(Icons.close),
                   ),
@@ -164,6 +152,18 @@ class _MapPageState extends State<MapPage> {
               ),
             ),
           ),
+        ),
+
+        Positioned(
+          bottom: 100,
+          right: 20,
+          child: FloatingActionButton(
+            mini: true,
+            backgroundColor: Colors.white,
+            onPressed: _getLocation,
+            child: const Icon(Icons.my_location, color: Colors.black),
+          ),
+        ),
       ],
     );
   }

@@ -1,6 +1,6 @@
 {
-    "name": "app_domine",
-    "short_name": "app_domine",
+    "name": "Domine",
+    "short_name": "Domine",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -1,5 +1,5 @@
-import 'package:app_domine/core/routes/home_shell.dart';
-import 'package:app_domine/features/auth/auth_service.dart';
+import 'package:Domine/core/routes/home_shell.dart';
+import 'package:Domine/features/auth/auth_service.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
@@ -7,7 +7,6 @@ class LoginPage extends StatefulWidget {
 
   @override
   State<LoginPage> createState() => _LoginPageState();
-  
 }
 
 class _LoginPageState extends State<LoginPage> {
@@ -32,7 +31,8 @@ class _LoginPageState extends State<LoginPage> {
           padding: const EdgeInsets.all(24),
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height -
+              minHeight:
+                  MediaQuery.of(context).size.height -
                   MediaQuery.of(context).padding.top,
             ),
             child: IntrinsicHeight(
@@ -52,7 +52,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 40),
 
                   const Text(
@@ -83,69 +83,56 @@ class _LoginPageState extends State<LoginPage> {
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
-                      padding:
-                          const EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(30)),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
                     ),
                     onPressed: () async {
                       try {
-                        await auth.login(
-                            email.text, pass.text);
+                        await auth.login(email.text, pass.text);
 
                         if (!mounted) return;
 
                         Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(
-                              builder: (_) =>
-                                  const HomeShell()),
+                          MaterialPageRoute(builder: (_) => const HomeShell()),
                           (route) => false,
                         );
                       } catch (e) {
                         if (!mounted) return;
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(
-                          SnackBar(
-                              content: Text("Erro: $e")),
-                        );
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text("Erro: $e")));
                       }
                     },
-                    child: const Text("Entrar",
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18)),
+                    child: const Text(
+                      "Entrar",
+                      style: TextStyle(color: Colors.black, fontSize: 18),
+                    ),
                   ),
 
                   const SizedBox(height: 30),
 
                   Row(
                     children: const [
-                      Expanded(
-                          child:
-                              Divider(color: Colors.white24)),
+                      Expanded(child: Divider(color: Colors.white24)),
                       Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 8),
-                        child: Text("ou",
-                            style: TextStyle(
-                                color: Colors.white54)),
+                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        child: Text(
+                          "ou",
+                          style: TextStyle(color: Colors.white54),
+                        ),
                       ),
-                      Expanded(
-                          child:
-                              Divider(color: Colors.white24)),
+                      Expanded(child: Divider(color: Colors.white24)),
                     ],
                   ),
 
                   const SizedBox(height: 20),
 
-                  _socialButton(
-                      "Continuar com Google",
-                      Icons.g_mobiledata),
+                  _socialButton("Continuar com Google", Icons.g_mobiledata),
                   const SizedBox(height: 12),
-                  _socialButton("Continuar com Apple",
-                      Icons.apple),
+                  _socialButton("Continuar com Apple", Icons.apple),
 
                   const Spacer(),
                 ],
@@ -158,60 +145,54 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _input(
-  String hint,
-  TextEditingController c, {
-  bool isPassword = false,
-}) {
-  return TextField(
-    controller: c,
-    obscureText: isPassword ? _obscurePassword : false,
-    style: const TextStyle(color: Colors.white),
-    decoration: InputDecoration(
-      hintText: hint,
-      hintStyle: const TextStyle(color: Colors.white38),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(30),
-        borderSide: const BorderSide(color: Colors.green),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(30),
-        borderSide:
-            const BorderSide(color: Colors.green, width: 2),
-      ),
+    String hint,
+    TextEditingController c, {
+    bool isPassword = false,
+  }) {
+    return TextField(
+      controller: c,
+      obscureText: isPassword ? _obscurePassword : false,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: const TextStyle(color: Colors.white38),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: const BorderSide(color: Colors.green),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: const BorderSide(color: Colors.green, width: 2),
+        ),
 
-      //AQUI ESTÁ O OLHINHO
-      suffixIcon: isPassword
-          ? IconButton(
-              icon: Icon(
-                _obscurePassword
-                    ? Icons.visibility_off
-                    : Icons.visibility,
-                color: Colors.green,
-              ),
-              onPressed: () {
-                setState(() {
-                  _obscurePassword = !_obscurePassword;
-                });
-              },
-            )
-          : null,
-    ),
-  );
-}
+        //AQUI ESTÁ O OLHINHO
+        suffixIcon: isPassword
+            ? IconButton(
+                icon: Icon(
+                  _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                  color: Colors.green,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscurePassword = !_obscurePassword;
+                  });
+                },
+              )
+            : null,
+      ),
+    );
+  }
 
   Widget _socialButton(String text, IconData icon) {
     return OutlinedButton.icon(
       style: OutlinedButton.styleFrom(
         side: const BorderSide(color: Colors.green),
-        padding:
-            const EdgeInsets.symmetric(vertical: 14),
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30)),
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       ),
       onPressed: () {},
       icon: Icon(icon, color: Colors.green),
-      label: Text(text,
-          style: const TextStyle(color: Colors.green)),
+      label: Text(text, style: const TextStyle(color: Colors.green)),
     );
   }
 }

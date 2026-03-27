@@ -14,7 +14,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-
   final supabase = Supabase.instance.client;
 
   String username = "Usuário";
@@ -36,7 +35,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> loadProfile() async {
-
     final user = supabase.auth.currentUser;
     if (user == null) return;
 
@@ -63,7 +61,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> loadTerritories() async {
-
     final user = supabase.auth.currentUser;
     if (user == null) return;
 
@@ -77,22 +74,18 @@ class _ProfilePageState extends State<ProfilePage> {
     for (var t in data) {
       final List path = t['path'];
 
-      temp.add(
-        path.map((p) => LatLng(p['lat'], p['lng'])).toList(),
-      );
+      temp.add(path.map((p) => LatLng(p['lat'], p['lng'])).toList());
     }
 
     setState(() {
       territoryPolygons = temp;
     });
   }
-   Future<void> pickImage() async {
 
+  Future<void> pickImage() async {
     final picker = ImagePicker();
 
-    final picked = await picker.pickImage(
-      source: ImageSource.gallery,
-    );
+    final picked = await picker.pickImage(source: ImageSource.gallery);
 
     if (picked != null) {
       setState(() {
@@ -100,7 +93,8 @@ class _ProfilePageState extends State<ProfilePage> {
       });
     }
   }
-    Future<String?> uploadAvatar(String userId) async {
+
+  Future<String?> uploadAvatar(String userId) async {
     if (imageFile == null) return null;
 
     final fileName = "$userId.jpg";
@@ -113,13 +107,12 @@ class _ProfilePageState extends State<ProfilePage> {
           fileOptions: const FileOptions(upsert: true),
         );
 
-    final publicUrl = supabase.storage
-        .from('avatars')
-        .getPublicUrl(fileName);
+    final publicUrl = supabase.storage.from('avatars').getPublicUrl(fileName);
 
     return publicUrl;
   }
-    Future<void> updateProfile() async {
+
+  Future<void> updateProfile() async {
     final user = supabase.auth.currentUser;
     if (user == null) return;
 
@@ -129,19 +122,13 @@ class _ProfilePageState extends State<ProfilePage> {
       avatarUrl = await uploadAvatar(user.id);
     }
 
-    final updateData = {
-      'username': usernameController.text,
-    };
+    final updateData = {'username': usernameController.text};
 
     if (avatarUrl != null) {
       updateData['photo_url'] = avatarUrl;
-      
     }
 
-    await supabase
-        .from('profiles')
-        .update(updateData)
-        .eq('id', user.id);
+    await supabase.from('profiles').update(updateData).eq('id', user.id);
 
     imageFile = null; // limpa preview
 
@@ -151,25 +138,20 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void openEditDialog() {
-
     usernameController.text = username;
 
     showDialog(
       context: context,
       builder: (_) {
-
         return AlertDialog(
           title: const Text("Editar Perfil"),
 
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-
               TextField(
                 controller: usernameController,
-                decoration: const InputDecoration(
-                  labelText: "Username",
-                ),
+                decoration: const InputDecoration(labelText: "Username"),
               ),
 
               const SizedBox(height: 10),
@@ -182,7 +164,6 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
 
           actions: [
-
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
@@ -192,13 +173,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
             ElevatedButton(
               onPressed: () async {
-
                 await updateProfile();
 
                 if (!mounted) return;
 
                 Navigator.pop(context);
-
               },
               child: const Text("Salvar"),
             ),
@@ -210,167 +189,151 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-
     if (loading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    final LatLng center =
-        territoryPolygons.isNotEmpty
-            ? territoryPolygons.first.first
-            : const LatLng(-3.2, -52.2); // centro aproximado do Pará
+    final LatLng center = territoryPolygons.isNotEmpty
+        ? territoryPolygons.first.first
+        : const LatLng(-3.2, -52.2); // centro aproximado do Pará
 
     return Scaffold(
       backgroundColor: const Color(0xFF2C2C2C),
       body: SafeArea(
-      child: SingleChildScrollView(
-      child: Column(
-          children: [
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // HEADER
+              Container(
+                height: 80,
+                color: const Color(0xFF3EB400),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const SizedBox(),
 
-            // HEADER
-            Container(
-              height: 80,
-              color: const Color(0xFF3EB400),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                    IconButton(
+                      onPressed: () async {
+                        await supabase.auth.signOut();
 
-                  const SizedBox(),
+                        if (!context.mounted) return;
 
-                  IconButton(
-                    onPressed: () async {
-
-                      await supabase.auth.signOut();
-
-                      if (!context.mounted) return;
-
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const AuthGate(),
-                        ),
-                        (route) => false,
-                      );
-
-                    },
-                    icon: const Icon(Icons.logout, color: Colors.white),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // FOTO
-            GestureDetector(
-              onTap: pickImage,
-              child: CircleAvatar(
-                radius: 70,
-                backgroundImage: imageFile != null
-                    ? FileImage(imageFile!)
-                    : (photoUrl.isNotEmpty
-                        ? NetworkImage(photoUrl)
-                        : null) as ImageProvider?,
-                child: photoUrl.isEmpty && imageFile == null
-                    ? const Icon(Icons.person, size: 50)
-                    : null,
-              ),
-            ),
-
-            const SizedBox(height: 15),
-
-            // NOME
-            Text(
-              username,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 22,
-              ),
-            ),
-
-            const SizedBox(height: 8),
-
-            GestureDetector(
-              onTap: openEditDialog,
-              child: const Text(
-                "Editar",
-                style: TextStyle(color: Colors.white54),
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
-            // CARDS
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-
-                  _statCard(
-                    "${totalKm.toStringAsFixed(0)} Km",
-                    "Distância\npercorrida",
-                  ),
-
-                  _statCard(
-                    territories.toString(),
-                    "Territórios\nConquistados",
-                  ),
-
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // MINI MAPA
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: SizedBox(
-                height: 180,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: FlutterMap(
-                    options: MapOptions(
-                      initialCenter: center,
-                      initialZoom: 13,
-                      interactionOptions:
-                          const InteractionOptions(
-                            flags: InteractiveFlag.none,
-                          ),
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (_) => const AuthGate()),
+                          (route) => false,
+                        );
+                      },
+                      icon: const Icon(Icons.logout, color: Colors.white),
                     ),
-                    children: [
+                  ],
+                ),
+              ),
 
-                      TileLayer(
-                        urlTemplate:
-                        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-                        subdomains: const ['a', 'b', 'c'],
-                        userAgentPackageName: 'com.domine.run',
-                      ),
+              const SizedBox(height: 20),
 
-                      PolygonLayer(
-                        polygons: territoryPolygons
-                            .map(
-                              (poly) => Polygon(
-                                points: poly,
-                                color:  Colors.green.withAlpha((255 * 0.4).round()),
-                                borderColor: Colors.green,
-                                borderStrokeWidth: 2,
-                              ),
-                            )
-                            .toList(),
+              // FOTO
+              GestureDetector(
+                onTap: pickImage,
+                child: CircleAvatar(
+                  radius: 70,
+                  backgroundImage: imageFile != null
+                      ? FileImage(imageFile!)
+                      : (photoUrl.isNotEmpty ? NetworkImage(photoUrl) : null)
+                            as ImageProvider?,
+                  child: photoUrl.isEmpty && imageFile == null
+                      ? const Icon(Icons.person, size: 50)
+                      : null,
+                ),
+              ),
+
+              const SizedBox(height: 15),
+
+              // NOME
+              Text(
+                username,
+                style: const TextStyle(color: Colors.white, fontSize: 22),
+              ),
+
+              const SizedBox(height: 8),
+
+              GestureDetector(
+                onTap: openEditDialog,
+                child: const Text(
+                  "Editar",
+                  style: TextStyle(color: Colors.white54),
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              // CARDS
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _statCard(
+                      "${totalKm.toStringAsFixed(0)} Km",
+                      "Distância\npercorrida",
+                    ),
+
+                    _statCard(
+                      territories.toString(),
+                      "Territórios\nConquistados",
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // MINI MAPA
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: SizedBox(
+                  height: 180,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: FlutterMap(
+                      options: MapOptions(
+                        initialCenter: center,
+                        initialZoom: 13,
+                        interactionOptions: const InteractionOptions(
+                          flags: InteractiveFlag.none,
+                        ),
                       ),
-                    ],
+                      children: [
+                        TileLayer(
+                          urlTemplate:
+                              "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                          subdomains: const ['a', 'b', 'c'],
+                          userAgentPackageName: 'com.Domine.run',
+                        ),
+
+                        PolygonLayer(
+                          polygons: territoryPolygons
+                              .map(
+                                (poly) => Polygon(
+                                  points: poly,
+                                  color: Colors.green.withAlpha(
+                                    (255 * 0.4).round(),
+                                  ),
+                                  borderColor: Colors.green,
+                                  borderStrokeWidth: 2,
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
@@ -385,7 +348,6 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       child: Column(
         children: [
-
           Text(
             value,
             style: const TextStyle(
@@ -400,9 +362,7 @@ class _ProfilePageState extends State<ProfilePage> {
           Text(
             label,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Colors.white,
-            ),
+            style: const TextStyle(color: Colors.white),
           ),
         ],
       ),

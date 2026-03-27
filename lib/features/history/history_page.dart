@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:app_domine/features/run/run_repository.dart';
-import 'package:app_domine/features/map/run_map_view.dart';
+import 'package:Domine/features/run/run_repository.dart';
+import 'package:Domine/features/map/run_map_view.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -35,11 +35,11 @@ class _HistoryPageState extends State<HistoryPage> {
       body: loading
           ? const Center(child: CircularProgressIndicator())
           : runs.isEmpty
-              ? const Center(child: Text("Nenhuma corrida registrada"))
-              : ListView.builder(
-                  itemCount: runs.length,
-                  itemBuilder: (_, i) => _tile(runs[i]),
-                ),
+          ? const Center(child: Text("Nenhuma corrida registrada"))
+          : ListView.builder(
+              itemCount: runs.length,
+              itemBuilder: (_, i) => _tile(runs[i]),
+            ),
     );
   }
 
@@ -59,9 +59,7 @@ class _HistoryPageState extends State<HistoryPage> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (_) => RunMapView(run: run),
-            ),
+            MaterialPageRoute(builder: (_) => RunMapView(run: run)),
           );
         },
       ),

@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:app_domine/features/run/run_controller.dart';
-import 'package:app_domine/features/run/run_repository.dart';
-import 'package:app_domine/core/routes/home_shell.dart';
+import 'package:Domine/features/run/run_controller.dart';
+import 'package:Domine/features/run/run_repository.dart';
+import 'package:Domine/core/routes/home_shell.dart';
 
 class RunPage extends StatefulWidget {
   const RunPage({super.key});
@@ -53,7 +53,6 @@ class _RunPageState extends State<RunPage> {
 
     /// TELA INICIAL (ANTES DE COMEÇAR A CORRIDA)
     if (!runStarted) {
-
       return Scaffold(
         appBar: AppBar(title: const Text("Nova corrida")),
         body: Center(
@@ -67,10 +66,7 @@ class _RunPageState extends State<RunPage> {
                 const Text(
                   "Pronto para conquistar território?",
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 const Text(
@@ -80,9 +76,10 @@ class _RunPageState extends State<RunPage> {
                 const SizedBox(height: 40),
                 ElevatedButton.icon(
                   onPressed: _startRun,
-                  icon: const Icon(Icons.play_arrow, color: Colors.black,),
-                  label: const Text("Iniciar corrida",
-                  style: TextStyle(color: Colors.black),
+                  icon: const Icon(Icons.play_arrow, color: Colors.black),
+                  label: const Text(
+                    "Iniciar corrida",
+                    style: TextStyle(color: Colors.black),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
@@ -102,9 +99,7 @@ class _RunPageState extends State<RunPage> {
 
     /// AGUARDANDO PRIMEIRO PONTO DO GPS
     if (session == null || session.path.isEmpty) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     /// CENTRALIZA MAPA
@@ -142,7 +137,7 @@ class _RunPageState extends State<RunPage> {
                       color: Colors.green.withValues(alpha: 0.4),
                       borderColor: Colors.green,
                       borderStrokeWidth: 2,
-                    )
+                    ),
                   ],
                 ),
             ],
@@ -177,8 +172,9 @@ class _RunPageState extends State<RunPage> {
                 backgroundColor: Colors.green,
                 foregroundColor: Colors.black,
               ),
-              child: const Text("Finalizar corrida",
-              style: TextStyle(color: Colors.black),
+              child: const Text(
+                "Finalizar corrida",
+                style: TextStyle(color: Colors.black),
               ),
             ),
           ),
@@ -198,10 +194,7 @@ class _RunPageState extends State<RunPage> {
       children: [
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         Text(label),
       ],
@@ -219,8 +212,9 @@ class _RunPageState extends State<RunPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Cancelar",
-            style: TextStyle(color: Colors.black),
+            child: const Text(
+              "Cancelar",
+              style: TextStyle(color: Colors.black),
             ),
           ),
           TextButton(
@@ -229,10 +223,7 @@ class _RunPageState extends State<RunPage> {
 
               final session = controller.session;
               if (session != null) {
-                await repo.saveRun(
-                  session,
-                  controller.conqueredAreaM2,
-                );
+                await repo.saveRun(session, controller.conqueredAreaM2);
               }
 
               if (!mounted) return;
@@ -242,13 +233,12 @@ class _RunPageState extends State<RunPage> {
               Future.microtask(() {
                 Navigator.pop(context); // volta da RunPage
                 HomeShell.of(context)?.goToHistory();
-              });// sai da tela de corrida
+              }); // sai da tela de corrida
             },
-             style: TextButton.styleFrom(
-             foregroundColor: Colors.green,
-             ),
-            child: const Text("Finalizar",
-            style: TextStyle(color: Colors.black),
+            style: TextButton.styleFrom(foregroundColor: Colors.green),
+            child: const Text(
+              "Finalizar",
+              style: TextStyle(color: Colors.black),
             ),
           ),
         ],

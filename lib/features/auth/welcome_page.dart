@@ -48,10 +48,7 @@ class WelcomePage extends StatelessWidget {
                   // LOGO + NOME (melhor identidade)
                   Row(
                     children: [
-                      Image.asset(
-                        "assets/logo/logo.png",
-                        width: 40,
-                      ),
+                      Image.asset("assets/logo/logo.png", width: 40),
                       const SizedBox(width: 10),
                       const Text(
                         "Domine",
@@ -61,7 +58,7 @@ class WelcomePage extends StatelessWidget {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
-                      )
+                      ),
                     ],
                   ),
 
@@ -143,9 +140,7 @@ class WelcomePage extends StatelessWidget {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (_) => const LoginPage(),
-                          ),
+                          MaterialPageRoute(builder: (_) => const LoginPage()),
                         );
                       },
                       child: const Text(

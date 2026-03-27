@@ -1,6 +1,6 @@
-import 'package:app_domine/features/auth/login_page.dart';
+import 'package:Domine/features/auth/login_page.dart';
 import 'package:flutter/material.dart';
-import 'package:app_domine/features/auth/auth_service.dart';
+import 'package:Domine/features/auth/auth_service.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -39,7 +39,8 @@ class _RegisterPageState extends State<RegisterPage> {
           padding: const EdgeInsets.all(24),
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height -
+              minHeight:
+                  MediaQuery.of(context).size.height -
                   MediaQuery.of(context).padding.top,
             ),
             child: IntrinsicHeight(
@@ -101,7 +102,9 @@ class _RegisterPageState extends State<RegisterPage> {
                           : const Text(
                               "Continuar",
                               style: TextStyle(
-                                  color: Colors.black, fontSize: 18),
+                                color: Colors.black,
+                                fontSize: 18,
+                              ),
                             ),
                     ),
                   ),
@@ -115,68 +118,66 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _input(
-  String hint,
-  TextEditingController c, {
-  bool isPassword = false,
-  bool isConfirm = false,
-}) {
-  bool isObscureField = isPassword || isConfirm;
+    String hint,
+    TextEditingController c, {
+    bool isPassword = false,
+    bool isConfirm = false,
+  }) {
+    bool isObscureField = isPassword || isConfirm;
 
-  return TextField(
-    controller: c,
-    obscureText: isPassword
-        ? _obscurePassword
-        : isConfirm
-            ? _obscureConfirmPassword
-            : false,
-    style: const TextStyle(color: Colors.white),
-    decoration: InputDecoration(
-      hintText: hint,
-      hintStyle: const TextStyle(color: Colors.white38),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(30),
-        borderSide: const BorderSide(color: Colors.green),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(30),
-        borderSide:
-            const BorderSide(color: Colors.green, width: 2),
-      ),
+    return TextField(
+      controller: c,
+      obscureText: isPassword
+          ? _obscurePassword
+          : isConfirm
+          ? _obscureConfirmPassword
+          : false,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: const TextStyle(color: Colors.white38),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: const BorderSide(color: Colors.green),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: const BorderSide(color: Colors.green, width: 2),
+        ),
 
-      //OLHINHO
-      suffixIcon: isObscureField
-          ? IconButton(
-              icon: Icon(
-                isPassword
-                    ? (_obscurePassword
-                        ? Icons.visibility_off
-                        : Icons.visibility)
-                    : (_obscureConfirmPassword
-                        ? Icons.visibility_off
-                        : Icons.visibility),
-                color: Colors.green,
-              ),
-              onPressed: () {
-                setState(() {
-                  if (isPassword) {
-                    _obscurePassword = !_obscurePassword;
-                  } else if (isConfirm) {
-                    _obscureConfirmPassword =
-                        !_obscureConfirmPassword;
-                  }
-                });
-              },
-            )
-          : null,
-    ),
-  );
-}
+        //OLHINHO
+        suffixIcon: isObscureField
+            ? IconButton(
+                icon: Icon(
+                  isPassword
+                      ? (_obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility)
+                      : (_obscureConfirmPassword
+                            ? Icons.visibility_off
+                            : Icons.visibility),
+                  color: Colors.green,
+                ),
+                onPressed: () {
+                  setState(() {
+                    if (isPassword) {
+                      _obscurePassword = !_obscurePassword;
+                    } else if (isConfirm) {
+                      _obscureConfirmPassword = !_obscureConfirmPassword;
+                    }
+                  });
+                },
+              )
+            : null,
+      ),
+    );
+  }
 
   Future<void> _register() async {
     if (pass.text != confirm.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("As senhas não coincidem")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("As senhas não coincidem")));
       return;
     }
 
@@ -204,12 +205,11 @@ class _RegisterPageState extends State<RegisterPage> {
           builder: (_) => const LoginPage(), // Alterado para LoginPage
         ),
       );
-
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erro: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Erro: $e")));
     } finally {
       if (mounted) setState(() => loading = false);
     }

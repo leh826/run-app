@@ -1,4 +1,4 @@
-import 'package:app_domine/features/auth/auth_gate.dart';
+import 'package:Domine/features/auth/auth_gate.dart';
 import 'package:flutter/material.dart';
 
 class App extends StatelessWidget {
@@ -6,13 +6,10 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
 
-       theme: ThemeData(
-        fontFamily: "Poppins",
-      ),
+      theme: ThemeData(fontFamily: "Poppins"),
 
       home: const AuthGate(),
     );
