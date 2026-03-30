@@ -320,7 +320,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: FlutterMap(
                       options: MapOptions(
                         initialCenter: center,
-                        initialZoom: 20,
+                        initialZoom: 15,
                         interactionOptions: const InteractionOptions(
                           flags: InteractiveFlag.none,
                         ),
