@@ -205,7 +205,7 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               // HEADER
               Container(
-                height: 80,
+                height: 50,
                 color: const Color(0xFF3EB400),
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: Row(
@@ -231,21 +231,41 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 25),
 
               // FOTO
-              GestureDetector(
-                onTap: pickImage,
-                child: CircleAvatar(
-                  radius: 70,
-                  backgroundImage: imageFile != null
-                      ? FileImage(imageFile!)
-                      : (photoUrl.isNotEmpty ? NetworkImage(photoUrl) : null)
-                            as ImageProvider?,
-                  child: photoUrl.isEmpty && imageFile == null
-                      ? const Icon(Icons.person, size: 50)
-                      : null,
-                ),
+              Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 65,
+                    backgroundColor: Colors.green,
+                    child: CircleAvatar(
+                      radius: 60,
+                      backgroundImage: photoUrl.isNotEmpty
+                          ? NetworkImage(photoUrl)
+                          : null,
+                      child: photoUrl.isEmpty
+                          ? const Icon(Icons.person, size: 50)
+                          : null,
+                    ),
+                  ),
+
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: openEditDialog,
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: const BoxDecoration(
+                          color: Colors.black,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.edit, size: 16, color: Colors.green),
+                      ),
+                    ),
+                  )
+                ],
               ),
 
               const SizedBox(height: 15),
@@ -253,20 +273,28 @@ class _ProfilePageState extends State<ProfilePage> {
               // NOME
               Text(
                 username,
-                style: const TextStyle(color: Colors.white, fontSize: 22),
+                style: const TextStyle(
+                  color: Colors.white, 
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                  ),
               ),
 
-              const SizedBox(height: 8),
+              const SizedBox(height: 25),
 
               GestureDetector(
                 onTap: openEditDialog,
                 child: const Text(
-                  "Editar",
-                  style: TextStyle(color: Colors.white54),
-                ),
+                  "Editar perfil",
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontSize: 13,
+                  ),
+                )
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 25),
 
               // CARDS
               Padding(
@@ -274,20 +302,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _statCard(
-                      "${totalKm.toStringAsFixed(0)} Km",
-                      "Distância\npercorrida",
-                    ),
-
-                    _statCard(
-                      territories.toString(),
-                      "Territórios\nConquistados",
-                    ),
+                    _statCard("${totalKm.toStringAsFixed(0)} Km", "Distância", Icons.route),
+                    _statCard("$territories", "Territórios", Icons.map),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 25),
 
               // MINI MAPA
               Padding(
@@ -299,7 +320,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: FlutterMap(
                       options: MapOptions(
                         initialCenter: center,
-                        initialZoom: 13,
+                        initialZoom: 20,
                         interactionOptions: const InteractionOptions(
                           flags: InteractiveFlag.none,
                         ),
@@ -338,16 +359,20 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _statCard(String value, String label) {
+  Widget _statCard(String value, String label, IconData icon) {
     return Container(
       width: 150,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: const Color(0xFF3EB400),
+        color: Colors.black,
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.green),
       ),
       child: Column(
         children: [
+          Icon(icon, color: Colors.green, size: 28),
+          const SizedBox(height: 10),
+
           Text(
             value,
             style: const TextStyle(
@@ -357,12 +382,15 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
 
           Text(
             label,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 13,
+            ),
           ),
         ],
       ),

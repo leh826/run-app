@@ -57,28 +57,31 @@ class _MapPageState extends State<MapPage> {
     return Stack(
       children: [
         // MAPA
-        FlutterMap(
-          options: MapOptions(initialCenter: userLocation!, initialZoom: 18),
-          children: [
-            TileLayer(
-              urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-              userAgentPackageName: 'com.example.run_territory',
-            ),
-            MarkerLayer(
-              markers: [
-                Marker(
-                  point: userLocation!,
-                  width: 40,
-                  height: 40,
-                  child: const Icon(
-                    Icons.my_location,
-                    color: Colors.green,
-                    size: 30,
+        SafeArea(
+          bottom: false,
+          child: FlutterMap(
+            options: MapOptions(initialCenter: userLocation!, initialZoom: 18),
+            children: [
+              TileLayer(
+                urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                userAgentPackageName: 'com.example.run_territory',
+              ),
+              MarkerLayer(
+                markers: [
+                  Marker(
+                    point: userLocation!,
+                    width: 40,
+                    height: 40,
+                    child: const Icon(
+                      Icons.my_location,
+                      color: Colors.green,
+                      size: 30,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
 
         // TOPO
@@ -86,8 +89,10 @@ class _MapPageState extends State<MapPage> {
           top: 0,
           left: 0,
           right: 0,
+          child: SafeArea(
+            bottom: false,
           child: Container(
-            height: 70,
+            height: 60,
             padding: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
               color: AppColors.green,
@@ -97,6 +102,7 @@ class _MapPageState extends State<MapPage> {
             ),
             alignment: Alignment.centerLeft,
             child: Image.asset('assets/logo/logo.png', height: 32),
+          ),
           ),
         ),
 
