@@ -1,4 +1,5 @@
 import 'package:Domine/features/map/map_page.dart';
+import 'package:Domine/features/ranking/ranking_page.dart';
 import 'package:flutter/material.dart';
 import 'package:Domine/core/themes/app_colors.dart';
 
@@ -25,6 +26,7 @@ class HomeShellState extends State<HomeShell> {
 
   final pages = const [
     MapPage(),
+    RankingPage(),
     Placeholder(), // botão central depois
     HistoryPage(),
     ProfilePage(),
@@ -33,6 +35,8 @@ class HomeShellState extends State<HomeShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
+      extendBody: true,
       body: pages[index],
 
       floatingActionButton: Container(
@@ -61,15 +65,20 @@ class HomeShellState extends State<HomeShell> {
         decoration: BoxDecoration(
           color: AppColors.green,
           borderRadius: BorderRadius.circular(25),
-          boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 8)],
+          boxShadow: const [
+            BoxShadow(color: Colors.black26, blurRadius: 8)],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             navItem(Icons.home, "Home", 0),
+
+            navItem(Icons.emoji_events, "Ranking", 1),
+
             const SizedBox(width: 40),
-            navItem(Icons.history, "Histórico", 2),
-            navItem(Icons.person, "Perfil", 3),
+
+            navItem(Icons.history, "Histórico", 3),
+            navItem(Icons.person, "Perfil", 4),
           ],
         ),
       ),
