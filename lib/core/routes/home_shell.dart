@@ -40,20 +40,38 @@ class HomeShellState extends State<HomeShell> {
       body: pages[index],
 
       floatingActionButton: Container(
-        height: 65,
-        width: 65,
+        // Aumentamos um pouquinho a altura e largura para acomodar o texto
+        height: 75,
+        width: 75,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.black,
           boxShadow: const [BoxShadow(color: Colors.black45, blurRadius: 8)],
         ),
-        child: IconButton(
-          icon: const Icon(Icons.directions_run, color: Colors.green, size: 30),
-          onPressed: () {
+        child: GestureDetector(
+          onTap: () {
             Navigator.of(
               context,
             ).push(MaterialPageRoute(builder: (_) => const RunPage()));
           },
+          //collumn
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Icon(Icons.directions_run, color: Colors.green, size: 28),
+              SizedBox(height: 4), // Pequeno espaço entre ícone e texto
+              Text(
+                "Iniciar Corrida",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          // ------------------------------------------
         ),
       ),
 
@@ -72,10 +90,10 @@ class HomeShellState extends State<HomeShell> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             navItem(Icons.home, "Home", 0),
-
             navItem(Icons.emoji_events, "Ranking", 1),
 
-            const SizedBox(width: 40),
+            // Aumentamos o espaço vazio para o novo botão maior
+            const SizedBox(width: 80),
 
             navItem(Icons.history, "Histórico", 3),
             navItem(Icons.person, "Perfil", 4),

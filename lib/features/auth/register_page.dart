@@ -84,7 +84,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   const SizedBox(height: 16),
                   _input("Confirme sua senha", confirm, isConfirm: true),
 
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 45),
 
                   SizedBox(
                     width: double.infinity,

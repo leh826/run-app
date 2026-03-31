@@ -242,7 +242,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const SizedBox(),
-                    IconButton(
+                    TextButton.icon(
                       onPressed: () async {
                         await supabase.auth.signOut();
                         if (!context.mounted) return;
@@ -252,7 +252,15 @@ class _ProfilePageState extends State<ProfilePage> {
                           (route) => false,
                         );
                       },
-                      icon: const Icon(Icons.logout, color: Colors.white),
+                      icon: const Icon(Icons.logout, color: Colors.white, size: 20),
+                      label: const Text(
+                        "Sair",
+                        style: TextStyle(
+                          color: Colors.white, 
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -346,7 +354,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       children: [
                         TileLayer(
-                          urlTemplate: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                          urlTemplate: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
                           subdomains: const ['a', 'b', 'c'],
                           userAgentPackageName: 'com.Domine.run',
                         ),
