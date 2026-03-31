@@ -323,7 +323,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       children: [
                         TileLayer(
-                          urlTemplate: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+                          urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}{r}.png",
                           subdomains: const ['a', 'b', 'c'],
                           userAgentPackageName: 'com.Domine.run',
                         ),
