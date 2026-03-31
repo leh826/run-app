@@ -59,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
       }
 
       // 4. Envia APENAS o idToken para o Supabase criar a sessão
-      await supabase.auth.signInWithIdToken(
+       supabase.auth.signInWithIdToken(
         provider: OAuthProvider.google,
         idToken: idToken,
       );

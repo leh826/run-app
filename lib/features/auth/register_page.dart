@@ -1,6 +1,11 @@
 import 'package:Domine/features/auth/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:Domine/features/auth/auth_service.dart';
+// --- NOVOS IMPORTS ADICIONADOS ---
+import 'package:Domine/core/routes/home_shell.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -19,6 +24,9 @@ class _RegisterPageState extends State<RegisterPage> {
 
   final auth = AuthService();
   bool loading = false;
+  
+  // Controle de loading para o botão do Google
+  bool _isLoadingGoogle = false; 
 
   @override
   void dispose() {
@@ -27,6 +35,64 @@ class _RegisterPageState extends State<RegisterPage> {
     pass.dispose();
     confirm.dispose();
     super.dispose();
+  }
+
+  // --- FUNÇÃO DO GOOGLE (Serve para Login E Cadastro) ---
+  Future<void> _signInWithGoogle() async {
+    setState(() {
+      _isLoadingGoogle = true;
+    });
+
+    try {
+      final supabase = Supabase.instance.client;
+
+      // 1. Acessa a instância única do GoogleSignIn
+      final googleSignIn = GoogleSignIn.instance;
+
+      // 2. Inicializa o serviço passando as chaves do seu .env
+      await googleSignIn.initialize(
+        serverClientId: dotenv.env['WEB_CLIENT_ID']!,
+        clientId: dotenv.env['IOS_CLIENT_ID'],
+      );
+
+      // 3. Abre a janelinha nativa do Google usando authenticate()
+      final googleUser = await googleSignIn.authenticate();
+      
+      // Se o usuário fechar a janela sem logar
+
+      final googleAuth = googleUser.authentication;
+      final idToken = googleAuth.idToken;
+
+      if (idToken == null) {
+        throw 'Faltam tokens de autenticação.';
+      }
+
+      // 4. Envia APENAS o idToken para o Supabase criar a sessão
+      supabase.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: idToken,
+      );
+
+      if (!mounted) return;
+
+      // Navega para a Home em caso de sucesso
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeShell()),
+        (route) => false,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erro no login com Google: $e")),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingGoogle = false;
+        });
+      }
+    }
   }
 
   @override
@@ -108,6 +174,37 @@ class _RegisterPageState extends State<RegisterPage> {
                             ),
                     ),
                   ),
+
+                  const SizedBox(height: 30),
+
+                  // --- LINHAS E BOTÃO DO GOOGLE ADICIONADOS AQUI ---
+                  Row(
+                    children: const [
+                      Expanded(child: Divider(color: Colors.white24)),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        child: Text(
+                          "ou",
+                          style: TextStyle(color: Colors.white54),
+                        ),
+                      ),
+                      Expanded(child: Divider(color: Colors.white24)),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: _socialButton(
+                      "Cadastrar com Google", 
+                      Icons.g_mobiledata, 
+                      _isLoadingGoogle ? null : _signInWithGoogle,
+                      _isLoadingGoogle
+                    ),
+                  ),
+                  
+                  const Spacer(),
                 ],
               ),
             ),
@@ -144,8 +241,6 @@ class _RegisterPageState extends State<RegisterPage> {
           borderRadius: BorderRadius.circular(30),
           borderSide: const BorderSide(color: Colors.green, width: 2),
         ),
-
-        //OLHINHO
         suffixIcon: isObscureField
             ? IconButton(
                 icon: Icon(
@@ -169,6 +264,29 @@ class _RegisterPageState extends State<RegisterPage> {
                 },
               )
             : null,
+      ),
+    );
+  }
+
+  // --- NOVO WIDGET DE BOTÃO DO GOOGLE ---
+  Widget _socialButton(String text, IconData icon, VoidCallback? onPressed, bool isLoading) {
+    return OutlinedButton.icon(
+      style: OutlinedButton.styleFrom(
+        side: const BorderSide(color: Colors.green),
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+      ),
+      onPressed: onPressed,
+      icon: isLoading 
+          ? const SizedBox(
+              width: 24, 
+              height: 24, 
+              child: CircularProgressIndicator(color: Colors.green, strokeWidth: 2)
+            )
+          : Icon(icon, color: Colors.green, size: 28),
+      label: Text(
+        isLoading ? "Aguarde..." : text, 
+        style: const TextStyle(color: Colors.green, fontSize: 16)
       ),
     );
   }
@@ -202,7 +320,7 @@ class _RegisterPageState extends State<RegisterPage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => const LoginPage(), // Alterado para LoginPage
+          builder: (_) => const LoginPage(),
         ),
       );
     } catch (e) {
