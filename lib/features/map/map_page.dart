@@ -1,11 +1,11 @@
 import 'package:Domine/core/themes/app_colors.dart';
+import 'package:Domine/shared/widgets/header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:Domine/services/notification_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../features/auth/auth_gate.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -90,53 +90,7 @@ class _MapPageState extends State<MapPage> {
           top: 0,
           left: 0,
           right: 0,
-          child: SafeArea(
-            bottom: false,
-            child: Container(
-              height: 60,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: AppColors.green, // Ou a cor exata que você está usando
-                boxShadow: const [
-                  BoxShadow(color: Colors.black26, blurRadius: 6),
-                ],
-              ),
-              // O 'alignment' foi removido para a Row funcionar corretamente
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Sua Logo na Esquerda
-                  Image.asset('assets/logo/logo.png', height: 32),
-                  
-                  // Seu Botão de Logout na Direita
-                  TextButton.icon(
-                    onPressed: () async {
-                      // Chamamos o Supabase diretamente aqui por precaução, 
-                      // caso você não tenha a variável 'supabase' declarada nesta tela
-                      await Supabase.instance.client.auth.signOut();
-                      
-                      if (!context.mounted) return;
-                      
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (_) => const AuthGate()),
-                        (route) => false,
-                      );
-                    },
-                    icon: const Icon(Icons.logout, color: Colors.white, size: 20),
-                    label: const Text(
-                      "Sair",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          child: AppHeader(),
         ),
 
         // ALERTA

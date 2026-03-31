@@ -1,9 +1,9 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:Domine/shared/widgets/header.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../features/auth/auth_gate.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:image_picker/image_picker.dart';
@@ -233,38 +233,7 @@ class _ProfilePageState extends State<ProfilePage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // HEADER
-              Container(
-                height: 50,
-                color: const Color(0xFF3EB400),
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const SizedBox(),
-                    TextButton.icon(
-                      onPressed: () async {
-                        await supabase.auth.signOut();
-                        if (!context.mounted) return;
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (_) => const AuthGate()),
-                          (route) => false,
-                        );
-                      },
-                      icon: const Icon(Icons.logout, color: Colors.white, size: 20),
-                      label: const Text(
-                        "Sair",
-                        style: TextStyle(
-                          color: Colors.white, 
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              const AppHeader(),
               const SizedBox(height: 25),
 
               // FOTO

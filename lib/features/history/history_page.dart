@@ -1,3 +1,4 @@
+import 'package:Domine/shared/widgets/header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -42,17 +43,8 @@ class _HistoryPageState extends State<HistoryPage> {
       body: SafeArea(
         child: Column(
           children: [
-            // HEADER VERDE
-            Container(
-              height: 70,
-              color: AppColors.green,
-              alignment: Alignment.centerLeft,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Image.asset(
-                "assets/logo/logo.png",
-                height: 35,
-              ),
-            ),
+            // HEADER
+            const AppHeader(),
 
             const SizedBox(height: 10),
 

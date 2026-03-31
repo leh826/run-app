@@ -1,5 +1,5 @@
+import 'package:Domine/shared/widgets/header.dart';
 import 'package:flutter/material.dart';
-import '../../core/themes/app_colors.dart';
 
 class RankingPage extends StatelessWidget {
   const RankingPage({super.key});
@@ -59,26 +59,7 @@ class RankingPage extends StatelessWidget {
         child: Column(
           children: [
             // HEADER
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: SafeArea(
-                bottom: false,
-              child: Container(
-                height: 60,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: AppColors.green,
-                  boxShadow: const [
-                    BoxShadow(color: Colors.black26, blurRadius: 6),
-                  ],
-                ),
-                alignment: Alignment.centerLeft,
-                child: Image.asset('assets/logo/logo.png', height: 32),
-              ),
-              ),
-            ),
+            const AppHeader(),
 
             const SizedBox(height: 25),
 
