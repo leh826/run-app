@@ -1,82 +1,67 @@
 import 'package:Domine/shared/widgets/header.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-class RankingPage extends StatelessWidget {
+class RankingPage extends StatefulWidget {
   const RankingPage({super.key});
 
-  // 🔥 MOCK (depois você troca pelo Supabase)
-  List<Map<String, dynamic>> get players => [
-        {
-          "name": "Marcia Ribeiro",
-          "score": 500,
-          "photo": "https://i.pravatar.cc/150?img=1"
-        },
-        {
-          "name": "Ruth Gomes",
-          "score": 300,
-          "photo": "https://i.pravatar.cc/150?img=2"
-        },
-        {
-          "name": "Caio Sampaio",
-          "score": 200,
-          "photo": "https://i.pravatar.cc/150?img=3"
-        },
-        {
-          "name": "Alberto Roberto",
-          "score": 180,
-          "photo": "https://i.pravatar.cc/150?img=4"
-        },
-        {
-          "name": "Lidia Martins",
-          "score": 150,
-          "photo": "https://i.pravatar.cc/150?img=5"
-        },
-        {
-          "name": "Rafael Cardoso",
-          "score": 120,
-          "photo": "https://i.pravatar.cc/150?img=6"
-        },
-        {
-          "name": "Joana Farias",
-          "score": 115,
-          "photo": "https://i.pravatar.cc/150?img=7"
-        },
-        {
-          "name": "Thiago Gouvêa",
-          "score": 100,
-          "photo": "https://i.pravatar.cc/150?img=8"
-        },
-      ];
+  @override
+  State<RankingPage> createState() => _RankingPageState();
+}
+
+class _RankingPageState extends State<RankingPage> {
+  final supabase = Supabase.instance.client;
+
+  List players = [];
+  String? myUserId;
+
+  @override
+  void initState() {
+    super.initState();
+    loadRanking();
+  }
+
+  Future<void> loadRanking() async {
+    final user = supabase.auth.currentUser;
+    if (user == null) return;
+
+    myUserId = user.id;
+
+    final data = await supabase
+        .from('profiles')
+        .select()
+        .order('total_area_km2', ascending: false);
+
+    setState(() {
+      players = data;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final top3 = players.take(3).toList();
-    final others = players.skip(3).toList();
+    if (players.isEmpty) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final others = players.length > 3 ? players.sublist(3) : [];
 
     return Scaffold(
       backgroundColor: const Color(0xFF2C2C2C),
       body: SafeArea(
         child: Column(
           children: [
-            // HEADER
             const AppHeader(),
 
             const SizedBox(height: 25),
 
-            //
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                _topPlayer(top3[1], "2º", 80),
-                _topPlayer(top3[0], "1º", 100),
-                _topPlayer(top3[2], "3º", 80),
-              ],
-            ),
+            // 🔥 TOP 3 (seguro)
+            _buildTop3(),
 
             const SizedBox(height: 25),
 
-            //LISTA
+            // 🔥 LISTA
             Expanded(
               child: ListView.builder(
                 itemCount: others.length,
@@ -84,7 +69,9 @@ class RankingPage extends StatelessWidget {
                   final player = others[index];
                   final position = index + 4;
 
-                  return _rankingItem(player, position);
+                  final isMe = player['id'] == myUserId;
+
+                  return _rankingItem(player, position, isMe);
                 },
               ),
             )
@@ -94,7 +81,25 @@ class RankingPage extends StatelessWidget {
     );
   }
 
-  // TOP 3 CARD
+  // 🔥 TOP 3 DINÂMICO (NÃO QUEBRA)
+  Widget _buildTop3() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        if (players.length > 1)
+          _topPlayer(players[1], "2º", 80),
+
+        if (players.isNotEmpty)
+          _topPlayer(players[0], "1º", 100),
+
+        if (players.length > 2)
+          _topPlayer(players[2], "3º", 80),
+      ],
+    );
+  }
+
+  // 🔥 TOP CARD
   Widget _topPlayer(Map player, String position, double size) {
     return Column(
       children: [
@@ -102,9 +107,7 @@ class RankingPage extends StatelessWidget {
           position,
           style: const TextStyle(color: Colors.white, fontSize: 18),
         ),
-
         const SizedBox(height: 8),
-
         Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
@@ -115,17 +118,24 @@ class RankingPage extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: size / 2.5,
-                backgroundImage: NetworkImage(player['photo']),
+                backgroundImage: player['photo_url'] != null &&
+                        player['photo_url'] != ''
+                    ? NetworkImage(player['photo_url'])
+                    : null,
+                child: (player['photo_url'] == null ||
+                        player['photo_url'] == '')
+                    ? const Icon(Icons.person)
+                    : null,
               ),
               const SizedBox(height: 8),
-              Text(player['name']),
+              Text(player['username'] ?? ''),
               const SizedBox(height: 4),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Icon(Icons.flag, size: 14),
                   const SizedBox(width: 4),
-                  Text("${player['score']} m²"),
+                  Text("${player['total_area_km2'] ?? 0} km²"),
                 ],
               )
             ],
@@ -135,8 +145,8 @@ class RankingPage extends StatelessWidget {
     );
   }
 
-  // LIST ITEM
-  Widget _rankingItem(Map player, int position) {
+  // 🔥 ITEM LISTA
+  Widget _rankingItem(Map player, int position, bool isMe) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: Row(
@@ -144,34 +154,54 @@ class RankingPage extends StatelessWidget {
           SizedBox(
             width: 40,
             child: Text(
-              "${position}º",
+              "$positionº",
               style: const TextStyle(color: Colors.white),
             ),
           ),
-
           Expanded(
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isMe ? Colors.green : Colors.white,
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Row(
                 children: [
                   Expanded(
-                    child: Text(player['name']),
+                    child: Text(
+                      player['username'] ?? '',
+                      style: TextStyle(
+                        color: isMe ? Colors.white : Colors.black,
+                        fontWeight:
+                            isMe ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
                   ),
                   Row(
                     children: [
-                      const Icon(Icons.flag, size: 14),
+                      Icon(Icons.flag,
+                          size: 14,
+                          color: isMe ? Colors.white : Colors.black),
                       const SizedBox(width: 4),
-                      Text("${player['score']} m²"),
+                      Text(
+                        "${player['total_area_km2'] ?? 0} km²",
+                        style: TextStyle(
+                          color: isMe ? Colors.white : Colors.black,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(width: 10),
                   CircleAvatar(
                     radius: 18,
-                    backgroundImage: NetworkImage(player['photo']),
+                    backgroundImage: player['photo_url'] != null &&
+                            player['photo_url'] != ''
+                        ? NetworkImage(player['photo_url'])
+                        : null,
+                    child: (player['photo_url'] == null ||
+                            player['photo_url'] == '')
+                        ? const Icon(Icons.person)
+                        : null,
                   ),
                 ],
               ),
