@@ -15,6 +15,16 @@ class _RankingPageState extends State<RankingPage> {
   List players = [];
   String? myUserId;
 
+  String formatArea(dynamic value) {
+    final area = (value ?? 0).toDouble();
+
+    if (area < 1) {
+      return "${(area * 1000).toStringAsFixed(0)} m²";
+    } else {
+      return "${area.toStringAsFixed(2)} km²";
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -135,7 +145,7 @@ class _RankingPageState extends State<RankingPage> {
                 children: [
                   const Icon(Icons.flag, size: 14),
                   const SizedBox(width: 4),
-                  Text("${player['total_area_km2'] ?? 0} km²"),
+                  Text(formatArea(player['total_area_km2'])),
                 ],
               )
             ],
@@ -184,7 +194,7 @@ class _RankingPageState extends State<RankingPage> {
                           color: isMe ? Colors.white : Colors.black),
                       const SizedBox(width: 4),
                       Text(
-                        "${player['total_area_km2'] ?? 0} km²",
+                        formatArea(player['total_area_km2']),
                         style: TextStyle(
                           color: isMe ? Colors.white : Colors.black,
                         ),

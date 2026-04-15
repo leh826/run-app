@@ -1,5 +1,7 @@
 import 'package:Domine/core/routes/home_shell.dart';
 import 'package:Domine/features/auth/auth_service.dart';
+import 'package:Domine/shared/utils/erro_handler.dart';
+import 'package:Domine/shared/widgets/snackbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -166,8 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                         );
                       } catch (e) {
                         if (!mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Erro: $e")));
+                        showError(context, ErrorHandler.getMessage(e));
                       }
                     },
                     child: const Text(

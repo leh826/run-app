@@ -1,7 +1,9 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:Domine/shared/utils/erro_handler.dart';
 import 'package:Domine/shared/widgets/header.dart';
+import 'package:Domine/shared/widgets/snackbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -59,6 +61,11 @@ class _ProfilePageState extends State<ProfilePage> {
       });
     } catch (e) {
       log("Erro ao carregar perfil: $e");
+      
+      if (mounted) {
+        showError(context, ErrorHandler.getMessage(e));
+      }
+
       setState(() => loading = false);
     }
   }
@@ -106,6 +113,11 @@ class _ProfilePageState extends State<ProfilePage> {
         avatarUrl = "$publicUrl?t=${DateTime.now().millisecondsSinceEpoch}";
       } catch (e) {
         log("Erro ao enviar imagem: $e");
+        if (mounted) {
+          showError(context, "Erro ao enviar imagem");
+        }
+
+        return;
       }
     }
 
@@ -114,9 +126,28 @@ class _ProfilePageState extends State<ProfilePage> {
       updateData['photo_url'] = avatarUrl;
     }
 
-    await supabase.from('profiles').update(updateData).eq('id', user.id);
-    await loadProfile();
-  }
+    try {
+      await supabase.from('profiles').update(updateData).eq('id', user.id);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Perfil atualizado com sucesso"),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+
+      await loadProfile();
+
+    } catch (e) {
+      log("Erro ao salvar perfil: $e");
+
+      if (mounted) {
+        showError(context, ErrorHandler.getMessage(e));
+      }
+    }
+}
 
   void openEditDialog() {
     final TextEditingController dialogUsernameController =

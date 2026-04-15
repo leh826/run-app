@@ -1,11 +1,13 @@
+import 'dart:developer';
 import 'package:Domine/features/auth/login_page.dart';
+import 'package:Domine/shared/widgets/snackbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:Domine/features/auth/auth_service.dart';
-// --- NOVOS IMPORTS ADICIONADOS ---
 import 'package:Domine/core/routes/home_shell.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:Domine/shared/utils/erro_handler.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -83,9 +85,7 @@ class _RegisterPageState extends State<RegisterPage> {
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erro no login com Google: $e")),
-      );
+       showError(context, ErrorHandler.getMessage(e));
     } finally {
       if (mounted) {
         setState(() {
@@ -298,6 +298,19 @@ class _RegisterPageState extends State<RegisterPage> {
       ).showSnackBar(const SnackBar(content: Text("As senhas não coincidem")));
       return;
     }
+    if (email.text.isEmpty || pass.text.isEmpty || username.text.isEmpty) {
+      showError(context, "Preencha todos os campos");
+      return;
+    }
+
+    if (!email.text.contains('@')) {
+      showError(context, "Digite um email válido");
+      return;
+    }
+    if (pass.text.length < 6) {
+      showError(context, "A senha deve ter pelo menos 6 caracteres");
+      return;
+    }
 
     setState(() => loading = true);
 
@@ -323,11 +336,10 @@ class _RegisterPageState extends State<RegisterPage> {
           builder: (_) => const LoginPage(),
         ),
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Erro: $e")));
+      log("Erro ao cadastrar usuário", error: e, stackTrace: stackTrace,);
+      showError(context, ErrorHandler.getMessage(e));
     } finally {
       if (mounted) setState(() => loading = false);
     }
