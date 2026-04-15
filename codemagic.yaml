@@ -1,18 +1,23 @@
 workflows:
-  flutter-app:
-    name: Flutter App Build
+  ios-altstore:
+    name: iOS for AltStore
 
     environment:
       flutter: stable
+      groups:
+        - env_vars
 
     cache:
       cache_paths:
         - ~/.pub-cache
-        - $HOME/Library/Caches/CocoaPods
         - ios/Pods
+        - $HOME/Library/Caches/CocoaPods
 
     scripts:
-      - name: Install dependencies
+      - name: Clean project
+        script: flutter clean
+
+      - name: Get dependencies
         script: flutter pub get
 
       - name: Create .env file
@@ -22,12 +27,15 @@ workflows:
           echo "WEB_CLIENT_ID=$WEB_CLIENT_ID" >> .env
           echo "IOS_CLIENT_ID=$IOS_CLIENT_ID" >> .env
 
-      - name: Build APK (Android)
-        script: flutter build apk --release
-
       - name: Build iOS (no signing)
         script: flutter build ios --release --no-codesign
 
+      - name: Create IPA manually
+        script: |
+          cd build/ios/iphoneos
+          mkdir Payload
+          cp -r Runner.app Payload/
+          zip -r app.ipa Payload
+
     artifacts:
-      - build/app/outputs/flutter-apk/*.apk
-      - build/ios/iphoneos/*.app
+      - build/ios/iphoneos/app.ipa
