@@ -1,0 +1,33 @@
+workflows:
+  flutter-app:
+    name: Flutter App Build
+
+    environment:
+      flutter: stable
+
+    cache:
+      cache_paths:
+        - ~/.pub-cache
+        - $HOME/Library/Caches/CocoaPods
+        - ios/Pods
+
+    scripts:
+      - name: Install dependencies
+        script: flutter pub get
+
+      - name: Create .env file
+        script: |
+          echo "SUPABASE_URL=$SUPABASE_URL" >> .env
+          echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> .env
+          echo "WEB_CLIENT_ID=$WEB_CLIENT_ID" >> .env
+          echo "IOS_CLIENT_ID=$IOS_CLIENT_ID" >> .env
+
+      - name: Build APK (Android)
+        script: flutter build apk --release
+
+      - name: Build iOS (no signing)
+        script: flutter build ios --release --no-codesign
+
+    artifacts:
+      - build/app/outputs/flutter-apk/*.apk
+      - build/ios/iphoneos/*.app
