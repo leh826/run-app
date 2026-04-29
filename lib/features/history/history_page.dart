@@ -36,6 +36,18 @@ class _HistoryPageState extends State<HistoryPage> {
     });
   }
 
+  String _formatDuration(Duration d) {
+    final h = d.inHours;
+    final m = d.inMinutes.remainder(60);
+    final s = d.inSeconds.remainder(60);
+
+    if (h > 0) {
+      return "${h}h ${m}m";
+    } else {
+      return "${m}m ${s}s";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,7 +103,8 @@ class _HistoryPageState extends State<HistoryPage> {
     final started = DateTime.parse(run["started_at"]);
     final km = (run["distance_km"] as num).toDouble();
     final pace = (run["pace"] as num).toDouble();
-
+    final seconds = run['duration_sec'] ?? 0;
+    final duration = Duration(seconds: seconds);
     final path = run["path"] ?? [];
     final points = path.isNotEmpty ? _buildPath(path) : <LatLng>[];
 
@@ -130,8 +143,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   _info(Icons.straighten, "${km.toStringAsFixed(1)} km"),
                   _info(Icons.directions_run,
                       "${pace.toStringAsFixed(1)} min/km"),
-                  _info(Icons.timer,
-                      "${run['duration_min'] ?? 0} min"),
+                  _info(Icons.timer, _formatDuration(duration)),
                 ],
               ),
             ),

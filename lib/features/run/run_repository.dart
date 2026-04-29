@@ -103,6 +103,7 @@ class RunRepository {
       "status": "NOVO",
       "territoryId": newTerritory["id"],
     };
+    
   }
 
   // ----------------- HISTÓRICO -----------------

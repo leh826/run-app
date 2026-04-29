@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:Domine/shared/widgets/snackbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:Domine/features/run/run_controller.dart';
 import 'package:Domine/features/run/run_repository.dart';
 import 'package:Domine/core/routes/home_shell.dart';
+import 'package:Domine/shared/widgets/run_controls.dart';
 
 class RunPage extends StatefulWidget {
   const RunPage({super.key});
@@ -35,7 +37,7 @@ class _RunPageState extends State<RunPage> {
   @override
   void dispose() {
     uiTimer?.cancel();
-    controller.stop();
+    controller.cancel();
     super.dispose();
   }
 
@@ -45,6 +47,31 @@ class _RunPageState extends State<RunPage> {
     setState(() {
       runStarted = true;
     });
+  }
+
+  void _cancelRun() {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Cancelar corrida"),
+        content: const Text("Deseja cancelar a corrida?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Não"),
+          ),
+          TextButton(
+            onPressed: () {
+              controller.cancel();
+
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+            child: const Text("Sim"),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -164,18 +191,13 @@ class _RunPageState extends State<RunPage> {
 
           Positioned(
             bottom: 30,
-            left: 40,
-            right: 40,
-            child: ElevatedButton(
-              onPressed: _confirmFinish,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                foregroundColor: Colors.black,
-              ),
-              child: const Text(
-                "Finalizar corrida",
-                style: TextStyle(color: Colors.black),
-              ),
+            left: 20,
+            right: 20,
+            child: RunControls(
+              controller: controller,
+              onFinish: _confirmFinish,
+              onCancel: _cancelRun,
+              onUpdate: () => setState(() {}),
             ),
           ),
         ],
@@ -219,21 +241,62 @@ class _RunPageState extends State<RunPage> {
           ),
           TextButton(
             onPressed: () async {
-              controller.stop();
-
               final session = controller.session;
+
               if (session != null) {
-                await repo.saveRun(session, controller.conqueredAreaM2);
+                // VALIDAÇÃO AQUI
+                if (controller.conqueredAreaM2 < 10) {
+                  if (!mounted) return;
+                  Navigator.pop(context);  
+                  showError(
+                    context,
+                    "Área muito pequena para formar território",
+                  );
+                  return;
+                }
+
+                if (controller.isStraightLine) {
+                  Navigator.pop(context);
+                  showError(
+                    context,
+                    "Faça um percurso fechado para conquistar território",
+                  );
+                  return;
+                }
+
+                controller.finish();
+
+                final result = await repo.saveRun(
+                  session,
+                  controller.conqueredAreaM2,
+                );
+
+                // FEEDBACK PRO USUÁRIO
+                if (!mounted) return;
+
+                switch (result['status']) {
+                  case 'NOVO':
+                    showSuccess(context, "Novo território conquistado!");
+                    break;
+
+                  case 'CAPTURADO':
+                    showSuccess(context, "Você capturou um território!");
+                    break;
+
+                  case 'REPETIDO':
+                    showError(context, "Corrida registrada, mas território já é seu");
+                    break;
+                }
               }
 
               if (!mounted) return;
 
-              Navigator.pop(context); // fecha dialog
+              Navigator.pop(context);
 
               Future.microtask(() {
-                Navigator.pop(context); // volta da RunPage
+                Navigator.pop(context);
                 HomeShell.of(context)?.goToHistory();
-              }); // sai da tela de corrida
+              });
             },
             style: TextButton.styleFrom(foregroundColor: Colors.green),
             child: const Text(

@@ -8,6 +8,8 @@ class RunController {
   RunSession? _session;
   StreamSubscription<Position>? _sub;
   Timer? _timer;
+  bool _isPaused = false;
+  bool get isPaused => _isPaused;
 
   RunSession? get session => _session;
 
@@ -56,12 +58,33 @@ class RunController {
     }
   }
 
-  void stop() {
+  void finish() {
     _sub?.cancel();
     _timer?.cancel();
     _session?.endTime = DateTime.now();
   }
+  void pause() {
+    _sub?.pause();
+    _timer?.cancel();
+    _isPaused = true;
+  }
+  void resume() {
+    _isPaused = false;
 
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (_session != null) {
+        _session!.endTime = DateTime.now();
+      }
+    });
+
+    _sub?.resume();
+  }
+  void cancel() {
+    _sub?.cancel();
+    _timer?.cancel();
+    _session = null;
+    _isPaused = false;
+  }
   // ---------------- DETECTAR LINHA RETA ----------------
 
   bool get isStraightLine {
